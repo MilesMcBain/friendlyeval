@@ -11,12 +11,37 @@
 ##' }
 ##' select_this(cyl)
 ##' @export
-typed_as_name <- rlang::enquo
+typed_as_name_rhs <- rlang::enquo
+
 
 ##' .. content for \description{} (no empty lines) ..
 ##'
 ##' .. content for \details{} ..
 ##' @title 
+##' @param arg 
+##' @return 
+##' @examples
+##'
+##' my_mutate1 <- function(dat, col_name){
+##'
+##' mutate(dat,
+##'       !!typed_as_name_lhs(colname) := 1
+##'       )
+##' }
+##'
+##' mtcars %>%
+##'   my_mutate1(cyl)
+##' @export
+typed_as_name_lhs <- function(arg){
+  quo_name(eval.parent(enquo(arg)))
+}
+
+typed_list_as_name_list <- rlang::enquos
+
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title  
 ##' @param a_value 
 ##' @return
 ##' @examples
@@ -24,6 +49,6 @@ typed_as_name <- rlang::enquo
 ##' mtcars %>%
 ##'  select(-!!value_as_name(b))
 ##' @export
-value_as_name <- function(a_value){
-  rlang::sym(a_value)
-}
+value_as_name <- rlang::sym
+
+value_list_as_name_list <- rlang::syms
