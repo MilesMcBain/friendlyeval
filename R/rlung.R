@@ -36,9 +36,9 @@ typed_as_name <- rlang::enquo
 ##' `mutate(!!typed_as_name_lhs(my_col) := pi)`. Note the usage of `:=`. This is
 ##' an additional requirement when using !! on the left hand side of an
 ##' equality.
-##' @title 
-##' @param arg 
-##' @return 
+##' @title typed_as_name_lhs
+##' @param a_name
+##' @return Something that will resolve to a column name when prefixed with `!!`
 ##' @examples
 ##'
 ##' my_mutate1 <- function(dat, col_name){
@@ -53,16 +53,26 @@ typed_as_name <- rlang::enquo
 ##' @export
 typed_as_name_lhs <- function(arg){
   quo_name(eval.parent(enquo(arg)))
-}
 
 
-##' .. content for \description{} (no empty lines) ..
+##' Take what was typed for a comma separated list of parameters and pass it to
+##' a another function as a list of column names
 ##'
-##' .. content for \details{} ..
-##' @title  
-##' @param a_value 
-##' @return
+##' This is used to pass the literal text the user typed for a list of function
+##' parameters and pass it to a dplyr function expecting a list of column names.
+##' The most common usage of this is to pass `...`, as in the example provided.
+##'
+##' This function must be prefixed with `!!!` to declare the output is a list.
+##'
+##' @typed_list_as_name_list
+##' @param a_list list of column names.
+##' @return something that will resolve to a list of column names when prefixed
+##'   with `!!!`
 ##' @examples
+##' select_these <- function(dat, ...){
+##'  select(dat, !!!typed_list_as_name_list(...))
+##' }
+##' select_these(mtcars, cyl, wt)
 ##' @export
 typed_list_as_name_list <- rlang::enquos
 
