@@ -2,6 +2,13 @@
 #### Testing
 library(dplyr)
 
+mutate_this <- function(a_col){
+ mutate(mtcars, result = mean(!!typed_as_name(a_col)))
+}
+
+mutate_this(cyl)
+
+
 my_mutate1 <- function(dat, col_name){
   
   mutate(dat,
@@ -54,4 +61,5 @@ select_these3 <- function(dat, ...){
 }
 
 select_these3(mtcars, "cyl", "wt")
+
 
