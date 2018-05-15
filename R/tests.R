@@ -50,16 +50,22 @@ select_these <- function(dat, ...){
 select_these(mtcars, cyl, wt)
 
 
+
 select_these2 <- function(dat, cols){
   select(dat, !!!value_list_as_name_list(cols))
 }
 select_these2(mtcars, c("cyl", "wt"))
 
-select_these3 <- function(dat, ...){
+select_these3 <- function(dat, cols){
+  select(dat, -c(!!!value_list_as_name_list(cols)))
+}
+select_these3(mtcars, c("cyl", "wt"))
+
+select_these4 <- function(dat, ...){
   dots <- list(...)
   select(dat, !!!value_list_as_name_list(dots))
 }
 
-select_these3(mtcars, "cyl", "wt")
+select_these4(mtcars, "cyl", "wt")
 
 
