@@ -1,0 +1,5 @@
+Name: Tranform friendlyeval to rlang
+Description: Converts friendlyeval functions in the active selection or active source editor to rlang
+Binding: friendlyeval_to_rlang
+Interactive: yes
+
