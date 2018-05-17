@@ -7,5 +7,7 @@ Depends: R (>= 3.4.4)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: rlang
+Imports: rlang,
+    purrr,
+    tibble
 RoxygenNote: 6.0.1

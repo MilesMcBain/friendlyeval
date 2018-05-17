@@ -36,7 +36,7 @@ typed_as_name <- rlang::enquo
 ##' an additional requirement when using !! on the left hand side of an
 ##' equality.
 ##' @title typed_as_name_lhs
-##' @param a_name
+##' @param a_name the argument to convert to a column name
 ##' @return Something that will resolve to a column name when prefixed with `!!`
 ##' @examples
 ##'
