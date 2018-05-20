@@ -2,7 +2,10 @@ Package: friendlyeval
 Title: A friendly interface to tidyeval for the casual dplyr user.
 Version: 0.0.1
 Authors@R: person("Miles", "McBain", email = "miles.mcbain@gmail.com", role = c("aut", "cre"))
-Description: Provides an alternative auto-complete friendly interface to rlang that is more closely aligned with the task domain of a user 'programming with dplyr'. Facility is provided to replace friendlyeval functions with their rlang equivalents after protyping a solution.
+Description: Provides an alternative auto-complete friendly interface to rlang
+    that is more closely aligned with the task domain of a user 'programming with
+    dplyr'. Facility is provided to replace friendlyeval functions with their rlang
+    equivalents after protyping a solution.
 Depends: R (>= 3.4.4)
 License: MIT + file LICENSE
 Encoding: UTF-8

@@ -25,16 +25,15 @@
 typed_as_name <- rlang::enquo
 
 ##' Take what was typed and use it as a column name argument in dplyr on the
-##' left hand side of an equality. 
+##' left hand side of a parameter assignment, '='.
 ##'
 ##' This is used inside a function to pass the literal text of what the user
 ##' typed as a function argument to another function. This function applies in
 ##' the special case that the text is intended to be used on the left hand side
-##' of an an equality. For example to replace `my_col` in `mutate(my_col = pi)`.
+##' of a parameter assignment '='. For example to replace `my_col` in `mutate(my_col = pi)`.
 ##' In this case the call must be rewritten as
 ##' `mutate(!!typed_as_name_lhs(my_col) := pi)`. Note the usage of `:=`. This is
-##' an additional requirement when using !! on the left hand side of an
-##' equality.
+##' an additional requirement when using !! on the left hand side of a parameter assignment.
 ##' @title typed_as_name_lhs
 ##' @param a_name the argument to convert to a column name
 ##' @return Something that will resolve to a column name when prefixed with `!!`
