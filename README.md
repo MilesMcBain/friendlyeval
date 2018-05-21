@@ -35,37 +35,24 @@ double_col(mtcars, arg = "cyl")
 #  Evaluation error: non-numeric argument to binary operator.
 ```
 That exhausts the options under normal evaluation rules! There are two ways to make `double_col` work:
-1. Instruct `dplyr` to use the literal value of whatever expression was **typed** for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
+1. Instruct `dplyr` to use the literal value of whatever expression was **typed** by your caller for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
 2. Instruct `dplyr` to use the **value** bound to `arg` (`"cyl"`) as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
 `friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to treat function arguments. It contains these 5 functions:
-  
-  * `typed_as_name`
-  * `typed_as_name_lhs`
-  * `typed_list_as_name_list`
-  * `value_as_name`
-  * `value_list_as_name_list`
+| function                | usage |
+|-------------------------|-------|
+| `typed_as_name`           | Use the expression that was typed by your function's caller as a `dplyr` column name.  |
+| `typed_as_name_lhs`       | Use the expression that was typed by your function's caller as a `dplyr` column name on the left hand side of an internal assignment eg: `mutate(lhs_col = 1)`.  |
+| `typed_list_as_name_list`  | Use a comma separated list of expressions typed by your function's caller as a comma separated list of `dplyr` column names |
+| `value_as_name`           | Use the value your function argument takes as a `dplyr` column name |
+| `value_list_as_name_list`  | Use a list of values as a list of `dplyr` column names  |
   
 Which are used with these 3 operators:
  
   * `!!`
   * `!!!`
   * `:=`
-
-## Naming Scheme
-
-The naming scheme is intended to help you identify the function that matches your scenario, `thing1_as_thing2` means use `thing1` from your function's argument(s) and have a dplyr function use it as a `thing2`. The definitions are:
-
-  * `typed` refers to what was typed by the caller of your function in the corresponding argument position. This might be a simple column name like `mpg` or an expression like `mpg*100`.
-  * `value` refers to the value of the bound to your function argument.
-  * `name` refers to a data frame column name in a `dplyr` function call.
-  * `typed_list` is what was typed by the caller of your function for a list of arguments, almost certainly captured by you in `...`
-  * `value_list` is a list of argument values supplied by the caller to your function either as separate parameters captured by your function in `...` or as a single list parameter.
-  * `name_list` is a comma-separated list of data frame column names in a `dplyr` function call, for example in: `select(dat, colname1, colname2)`, the `name_list` is `colname1, colname2`.
-  * `lhs` is an abbreviation for the left hand side of an assignment e.g `colname1` is on the left hand side in `mutate(colname1 = row_number())`
   
-Returning to the `select_not()` example above, we need `dplyr` to use the value of `arg` as the name of a column in `dat`. So the `friendlyeval` function needed is `value_as_name`.
-
 ## Operators
 
 `!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated first to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
