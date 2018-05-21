@@ -15,15 +15,30 @@ I aim to explain the use of `friendyeval` here in simple task-oriented language 
 This cost of this convenience is more work when we want to write functions that call `dplyr` since `dplyr` needs to be instructed not how to treat the arguments we pass it. For example this function does not work as we might expect:
 
 ```
-select_not <- function(dat, arg){
-  select(dat, -arg)
+double_col <- function(dat, arg){
+  mutate(dat, arg*2)
 }
 
-select_not(mtcats, cyl)
-```
-`arg` is being interpreted as the name of a column which does not exist. To make this work we can instruct dplyr not to treat 'arg' as a literal column name, but instead as a variable that holds a column name.
+double_col(mtcars, cyl)
 
-`friendlyeval` provides a set of functions and operators for issuing dplyr instructions about how to treat function arguments. It contains these 5 functions:
+# Error in mutate_impl(.data, dots) : 
+#   Evaluation error: object 'cyl' not found.
+```
+Our `double_col` doesn't perform the same special argument handling as `dplyr`.
+
+So we might try:
+
+```
+double_col(mtcars, arg = "cyl")
+
+# Error in mutate_impl(.data, dots) : 
+#  Evaluation error: non-numeric argument to binary operator.
+```
+That exhausts the options under normal evaluation rules! There are two ways to make `double_col` work:
+1. Instruct `dplyr` to use the literal value of whatever expression was **typed** for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
+2. Instruct `dplyr` to use the **value** bound to `arg` (`"cyl"`) as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
+
+`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to treat function arguments. It contains these 5 functions:
   
   * `typed_as_name`
   * `typed_as_name_lhs`
@@ -53,7 +68,7 @@ Returning to the `select_not()` example above, we need `dplyr` to use the value 
 
 ## Operators
 
-`!!` and `!!!` are signposts that tell `dplyr`: "Stop. This needs to be evaluated first to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
+`!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated first to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
 
 `:=` is used in place of `=` in the special case where we need to evaluate to resolve a column name on the left hand side of an `=` like in `mutate(!!typed_as_name_lhs(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!typed_as_name_lhs(colname) := rownumber)`
   
