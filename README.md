@@ -39,13 +39,13 @@ That exhausts the options under normal evaluation rules! There are two ways to m
 2. Instruct `dplyr` to use the **value** bound to `arg` (`"cyl"`) as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
 `friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to treat function arguments. It contains these 5 functions:
-| function                | usage |
-|-------------------------|-------|
-| `typed_as_name`           | Use the expression that was typed by your function's caller as a `dplyr` column name.  |
-| `typed_as_name_lhs`       | Use the expression that was typed by your function's caller as a `dplyr` column name on the left hand side of an internal assignment eg: `mutate(lhs_col = 1)`.  |
-| `typed_list_as_name_list`  | Use a comma separated list of expressions typed by your function's caller as a comma separated list of `dplyr` column names |
-| `value_as_name`           | Use the value your function argument takes as a `dplyr` column name |
-| `value_list_as_name_list`  | Use a list of values as a list of `dplyr` column names  |
+ function | usage 
+ --- | --- 
+ `typed_as_name` | Use the expression that was typed by your function's caller as a `dplyr` column name.
+ `typed_as_name_lhs` | Use the expression that was typed by your function's caller as a `dplyr` column name on the left hand side of an internal assignment eg: `mutate(lhs_col = 1)`.
+ `typed_list_as_name_list` | Use a comma separated list of expressions typed by your function's caller as a comma separated list of `dplyr` column names. 
+ `value_as_name` | Use the value your function argument takes as a `dplyr` column name.
+ `value_list_as_name_list` | Use a list of values as a list of `dplyr` column names.
   
 Which are used with these 3 operators:
  
