@@ -16,7 +16,7 @@ This cost of this convenience is more work when we want to write functions that 
 
 ```
 double_col <- function(dat, arg){
-  mutate(dat, arg*2)
+  mutate(dat, result = arg*2)
 }
 
 double_col(mtcars, cyl)
@@ -60,3 +60,31 @@ Which are used with these 3 operators:
 
 `:=` is used in place of `=` in the special case where we need to evaluate to resolve a column name on the left hand side of an `=` like in `mutate(!!typed_as_name_lhs(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!typed_as_name_lhs(colname) := rownumber)`
   
+## Usage Examples
+
+### Making `double_col` work
+Using what was typed, `dplyr` style:
+
+```
+double_col <- function(dat, arg){
+  mutate(dat, result = !!typed_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, cyl)
+```
+
+Using supplied value:
+
+```
+double_col <- function(dat, arg){
+  mutate(dat, result = !!value_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, arg = "cyl")
+```
+
+### Supplying names to be assigned to (lhs variant)
+
+### Working with argument lists
