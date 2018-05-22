@@ -13,7 +13,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   expect_equal_({
     
     double_col <- function(dat, arg){
-      mutate(dat, result = !!typed_as_name(arg)*2)
+      dplyr::mutate(dat, result = !!typed_as_name(arg)*2)
     }
     
     ## working call form:
@@ -21,7 +21,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   },
   {
     double_col <- function(dat, arg){
-      mutate(dat, result = !!rlang::enquo(arg)*2)
+      dplyr::mutate(dat, result = !!rlang::enquo(arg)*2)
     }
     
     ## working call form:
@@ -31,7 +31,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   
   expect_equal_({
     double_col <- function(dat, arg) {
-      mutate(dat, result = !!value_as_name(arg) * 2)
+      dplyr::mutate(dat, result = !!value_as_name(arg) * 2)
     }
     
     ## working call form:
@@ -40,7 +40,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   },
   {
     double_col <- function(dat, arg) {
-      mutate(dat, result = !!rlang::sym(arg) * 2)
+      dplyr::mutate(dat, result = !!rlang::sym(arg) * 2)
     }
     
     ## working call form:
@@ -50,7 +50,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   expect_equal_({
     double_col <- function(dat, arg, result) {
       ## note usage of ':=' for lhs eval.
-      mutate(dat,!!typed_as_name_lhs(result) := !!typed_as_name(arg) * 2)
+      dplyr::mutate(dat,!!typed_as_name_lhs(result) := !!typed_as_name(arg) * 2)
     }
     
     ## working call form:
@@ -61,7 +61,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   {
     double_col <- function(dat, arg, result) {
       ## note usage of ':=' for lhs eval.
-      mutate(dat, !!rlang::ensym(result) := !!rlang::enquo(arg) * 2)
+      dplyr::mutate(dat, !!rlang::ensym(result) := !!rlang::enquo(arg) * 2)
     }
     
     ## working call form:
@@ -71,7 +71,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   expect_equal_({
     double_col <- function(dat, arg, result) {
       ## note usage of ':=' for lhs eval.
-      mutate(dat, !!value_as_name(result) := !!value_as_name(arg) * 2)
+      dplyr::mutate(dat, !!value_as_name(result) := !!value_as_name(arg) * 2)
     }
     
     ## working call form:
@@ -81,7 +81,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
   {
     double_col <- function(dat, arg, result) {
       ## note usage of ':=' for lhs eval.
-      mutate(dat, !!rlang::sym(result) := !!rlang::sym(arg) * 2)
+      dplyr::mutate(dat, !!rlang::sym(result) := !!rlang::sym(arg) * 2)
     }
     
     ## working call form:
@@ -93,44 +93,44 @@ test_that("friendlyeval is equivalent to rlang functions", {
       ## this expression is split out for readability, but it can be nested into below.
       groups <- typed_list_as_name_list(...)
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form
-    reverse_group_by(mtcars, gear, am)
+    reverse_dplyr::group_by(mtcars, gear, am)
   },
   {
     reverse_group_by <- function(dat, ...) {
       ## this expression is split out for readability, but it can be nested into below.
       groups <- rlang::enquos(...)
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form
-    reverse_group_by(mtcars, gear, am)
+    reverse_dplyr::group_by(mtcars, gear, am)
   })
   
   expect_equal_({
     reverse_group_by <- function(dat, columns) {
       groups <- value_list_as_name_list(columns)
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form:
-    reverse_group_by(mtcars, c('gear', 'am'))
+    reverse_dplyr::group_by(mtcars, c('gear', 'am'))
     
   },
   {
     reverse_group_by <- function(dat, columns) {
       groups <- rlang::syms(columns)
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form:
-    reverse_group_by(mtcars, c('gear', 'am'))
+    reverse_dplyr::group_by(mtcars, c('gear', 'am'))
   })
   
   expect_equal_({
@@ -138,11 +138,11 @@ test_that("friendlyeval is equivalent to rlang functions", {
       ## note the list() around ... to collect the arguments into a list.
       groups <- value_list_as_name_list(list(...))
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form:
-    reverse_group_by(mtcars, 'gear', 'am')
+    reverse_dplyr::group_by(mtcars, 'gear', 'am')
     
   },
   {
@@ -150,36 +150,36 @@ test_that("friendlyeval is equivalent to rlang functions", {
       ## note the list() around ... to collect the arguments into a list.
       groups <- rlang::syms(list(...))
       
-      group_by(dat, !!!rev(groups))
+      dplyr::group_by(dat, !!!rev(groups))
     }
     
     ## working call form:
-    reverse_group_by(mtcars, 'gear', 'am')
+    reverse_dplyr::group_by(mtcars, 'gear', 'am')
   })
   
   expect_equal_({
     select_these <- function(dat, ...) {
-      select(dat, !!!typed_list_as_name_list(...))
+      dplyr::select(dat, !!!typed_list_as_name_list(...))
     }
     select_these(mtcars, cyl, wt)
     
   },
   {
     select_these <- function(dat, ...) {
-      select(dat, !!!rlang::enquos(...))
+      dplyr::select(dat, !!!rlang::enquos(...))
     }
     select_these(mtcars, cyl, wt)
   })
   
   expect_equal_({
     select_these3 <- function(dat, cols) {
-      select(dat, -c(!!!value_list_as_name_list(cols)))
+      dplyr::select(dat, -c(!!!value_list_as_name_list(cols)))
     }
     select_these3(mtcars, c("cyl", "wt"))
   },
   {
     select_these3 <- function(dat, cols) {
-      select(dat, -c(!!!rlang::syms(cols)))
+      dplyr::select(dat, -c(!!!rlang::syms(cols)))
     }
     select_these3(mtcars, c("cyl", "wt"))
   })

@@ -11,6 +11,7 @@
 ##'   as a column name.
 ##' @return Something that will resolve to a column named when prefixed with !!.
 ##' @examples
+##' \dontrun{
 ##' select_this <- function(a_col){
 ##'  select(mtcars, !!typed_as_name(a_col))
 ##' }
@@ -20,7 +21,7 @@
 ##'  mutate(mtcars, result = mean(!!typed_as_name(a_col)))
 ##' }
 ##' mutate_this(cyl)
-##' 
+##' }
 ##' @export
 typed_as_name <- rlang::enquo
 
@@ -38,7 +39,7 @@ typed_as_name <- rlang::enquo
 ##' @param a_name the argument to convert to a column name
 ##' @return Something that will resolve to a column name when prefixed with `!!`
 ##' @examples
-##'
+##' \dontrun{
 ##' my_mutate1 <- function(dat, col_name){
 ##'
 ##' mutate(dat,
@@ -48,6 +49,7 @@ typed_as_name <- rlang::enquo
 ##'
 ##' mtcars %>%
 ##'   my_mutate1(cyl)
+##' }
 ##' @export
 typed_as_name_lhs <- rlang::ensym
 
@@ -65,10 +67,12 @@ typed_as_name_lhs <- rlang::ensym
 ##' @return something that will resolve to a list of column names when prefixed
 ##'   with `!!!`
 ##' @examples
+##' \dontrun{
 ##' select_these <- function(dat, ...){
 ##'  select(dat, !!!typed_list_as_name_list(...))
 ##' }
 ##' select_these(mtcars, cyl, wt)
+##' }
 ##' @export
 typed_list_as_name_list <- rlang::enquos
 
@@ -83,9 +87,11 @@ typed_list_as_name_list <- rlang::enquos
 ##' @param a_value 
 ##' @return something that will resolve to a column name when prefixed with `!!`.
 ##' @examples
+##' \dontrun{
 ##' b <- "cyl"
 ##' mtcars %>%
 ##'  select(-!!value_as_name(b))
+##' }
 ##' @export
 value_as_name <- rlang::sym
 
@@ -104,6 +110,7 @@ value_as_name <- rlang::sym
 ##' @return something that will resolve to a comma separated list of column
 ##'   names when prefixed with `!!!`.
 ##' @examples
+##' \dontrun{
 ##' select_these2 <- function(dat, cols){
 ##'   select(dat, !!!value_list_as_name_list(cols))
 ##' }
@@ -119,5 +126,6 @@ value_as_name <- rlang::sym
 ##'   select(dat, -c(!!!value_list_as_name_list(cols)))
 ##' }
 ##' select_not_these(mtcars, cols = c("cyl", "wt"))
+##' }
 ##' @export
 value_list_as_name_list <- rlang::syms
