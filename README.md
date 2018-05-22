@@ -35,7 +35,7 @@ double_col(mtcars, arg = 'cyl')
 # Error in mutate_impl(.data, dots) : 
 #  Evaluation error: non-numeric argument to binary operator.
 ```
-That exhausts the options under normal evaluation rules! There are two ways to make `double_col` work:
+Those were our only options under normal evaluation rules! There are two ways to make `double_col` work:
 1. Instruct `dplyr` to use the literal value of whatever expression was **typed** by your caller for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
 2. Instruct `dplyr` to use the **value** bound to `arg` - "cyl" - as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
