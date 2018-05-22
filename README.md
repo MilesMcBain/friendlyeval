@@ -1,4 +1,8 @@
 # friendlyeval
+
+[![Travis-CI Build Status](https://travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval)
+
+
 A friendly interface to tidyeval/`rlang` for the casual dplyr user.
 
 This package provides an alternative auto-complete friendly interface to `rlang` that is more closely aligned with the task domain of a user 'programming with dplyr'. It implements most of the cases in the 'programming with dplyr' vignette.
@@ -9,7 +13,7 @@ The interface can convert itself to standard `rlang` with the help of an RStudio
 
 `dplyr` functions try to be user-friendly by saving you typing. They allow to one to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of the more cumbersome base R style: `data$col =abs(data$col2); data$col3 = data$col4*100`.
 
-This cost of this convenience is more work when we want to write functions that call `dplyr` since `dplyr` needs to be instructed not how to treat the arguments we pass it. For example this function does not work as we might expect:
+This cost of this convenience is more work when we want to write functions that call `dplyr` since `dplyr` needs to be instructed how to treat the arguments we pass it. For example this function does not work as we might expect:
 
 ```
 double_col <- function(dat, arg){
@@ -53,7 +57,7 @@ Which are used with these 3 operators:
   
 ## Operators
 
-`!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated first to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
+`!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
 
 `:=` is used in place of `=` in the special case where we need to evaluate to resolve a column name on the left hand side of an `=` like in `mutate(!!typed_as_name_lhs(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!typed_as_name_lhs(colname) := rownumber)`
   
