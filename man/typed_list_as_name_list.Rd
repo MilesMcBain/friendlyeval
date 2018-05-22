@@ -4,11 +4,10 @@
 \alias{typed_list_as_name_list}
 \title{typed_list_as_name_list}
 \usage{
-typed_list_as_name_list(..., .named = FALSE, .ignore_empty = c("trailing",
-  "none", "all"), .unquote_names = TRUE)
+typed_list_as_name_list(...)
 }
 \arguments{
-\item{a_list}{list of column names.}
+\item{...}{a comma separated list of arguments to be used as column names.}
 }
 \value{
 something that will resolve to a list of column names when prefixed
@@ -26,8 +25,10 @@ The most common usage of this is to pass `...`, as in the example provided.
 This function must be prefixed with `!!!` to declare the output is a list.
 }
 \examples{
+\dontrun{
 select_these <- function(dat, ...){
  select(dat, !!!typed_list_as_name_list(...))
 }
 select_these(mtcars, cyl, wt)
+}
 }

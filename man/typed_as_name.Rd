@@ -7,7 +7,7 @@
 typed_as_name(arg)
 }
 \arguments{
-\item{a_name}{the argument for which the user typed text that is to be used
+\item{arg}{the argument for which the user typed text that is to be used
 as a column name.}
 }
 \value{
@@ -24,6 +24,7 @@ typically be destined for a column name argument. See examples for usage
 scenarios.
 }
 \examples{
+\dontrun{
 select_this <- function(a_col){
  select(mtcars, !!typed_as_name(a_col))
 }
@@ -33,5 +34,5 @@ mutate_this <- function(a_col){
  mutate(mtcars, result = mean(!!typed_as_name(a_col)))
 }
 mutate_this(cyl)
-
+}
 }

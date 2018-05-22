@@ -5,9 +5,10 @@
 ##' typed as an argument to another function. When using dplyr the text will
 ##' typically be destined for a column name argument. See examples for usage
 ##' scenarios.
-##' 
+##'
 ##' @title typed_as_name
-##' @param a_name the argument for which the user typed text that is to be used
+##' @usage typed_as_name(arg)
+##' @param arg the argument for which the user typed text that is to be used
 ##'   as a column name.
 ##' @return Something that will resolve to a column named when prefixed with !!.
 ##' @examples
@@ -36,7 +37,8 @@ typed_as_name <- rlang::enquo
 ##' `mutate(!!typed_as_name_lhs(my_col) := pi)`. Note the usage of `:=`. This is
 ##' an additional requirement when using !! on the left hand side of a parameter assignment.
 ##' @title typed_as_name_lhs
-##' @param a_name the argument to convert to a column name
+##' @usage typed_as_name_lhs(arg)
+##' @param arg the argument to convert to a column name
 ##' @return Something that will resolve to a column name when prefixed with `!!`
 ##' @examples
 ##' \dontrun{
@@ -63,7 +65,8 @@ typed_as_name_lhs <- rlang::ensym
 ##' This function must be prefixed with `!!!` to declare the output is a list.
 ##'
 ##' @title typed_list_as_name_list
-##' @param a_list list of column names.
+##' @usage typed_list_as_name_list(...)
+##' @param ... a comma separated list of arguments to be used as column names.
 ##' @return something that will resolve to a list of column names when prefixed
 ##'   with `!!!`
 ##' @examples
@@ -74,7 +77,9 @@ typed_as_name_lhs <- rlang::ensym
 ##' select_these(mtcars, cyl, wt)
 ##' }
 ##' @export
-typed_list_as_name_list <- rlang::enquos
+typed_list_as_name_list <- function(...){
+  eval.parent(rlang::enquos(...))
+}
 
 ##' Take the value of a character argument and use it as a column name in a
 ##' dplyr expression.
@@ -83,8 +88,9 @@ typed_list_as_name_list <- rlang::enquos
 ##' in place of a literal column name when calling a dplyr function. This
 ##' ability is useful when the name of the column to operate on is determined at
 ##' run-time.
-##' @title value_as_name 
-##' @param a_value 
+##' @title value_as_name
+##' @usage value_as_name(arg)
+##' @param arg the argument that holds a value to be used as a column name.
 ##' @return something that will resolve to a column name when prefixed with `!!`.
 ##' @examples
 ##' \dontrun{
@@ -93,7 +99,9 @@ typed_list_as_name_list <- rlang::enquos
 ##'  select(-!!value_as_name(b))
 ##' }
 ##' @export
-value_as_name <- rlang::sym
+value_as_name <- function(arg){
+  rlang::sym(arg)
+}
 
 ##' Take a list of characters or character vectors and use the values as column
 ##' names.
@@ -104,9 +112,10 @@ value_as_name <- rlang::sym
 ##' single argument, as in the `select_these2` example, however it can also be
 ##' used with ... to transform all ... values to column names - see
 ##' `select_these3` example.
-##' 
-##' @title value_list_as_name_list 
-##' @param a_value 
+##'
+##' @title value_list_as_name_list
+##' @usage value_list_as_name_list(arg)
+##' @param arg the argument that holds a list of values to be used as column names.
 ##' @return something that will resolve to a comma separated list of column
 ##'   names when prefixed with `!!!`.
 ##' @examples
@@ -121,11 +130,13 @@ value_as_name <- rlang::sym
 ##'  select(dat, !!!value_list_as_name_list(dots))
 ##' }
 ##' select_these3(mtcars, "cyl", "wt")
-##' 
+##'
 ##' select_not_these <- function(dat, cols){
 ##'   select(dat, -c(!!!value_list_as_name_list(cols)))
 ##' }
 ##' select_not_these(mtcars, cols = c("cyl", "wt"))
 ##' }
 ##' @export
-value_list_as_name_list <- rlang::syms
+value_list_as_name_list <- function(arg){
+  rlang::syms(arg)
+}

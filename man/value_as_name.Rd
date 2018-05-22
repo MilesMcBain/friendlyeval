@@ -4,10 +4,10 @@
 \alias{value_as_name}
 \title{value_as_name}
 \usage{
-value_as_name(x)
+value_as_name(arg)
 }
 \arguments{
-\item{a_value}{}
+\item{arg}{the argument that holds a value to be used as a column name.}
 }
 \value{
 something that will resolve to a column name when prefixed with `!!`.
@@ -23,7 +23,9 @@ ability is useful when the name of the column to operate on is determined at
 run-time.
 }
 \examples{
+\dontrun{
 b <- "cyl"
 mtcars \%>\%
  select(-!!value_as_name(b))
+}
 }

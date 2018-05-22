@@ -1,5 +1,5 @@
 Package: friendlyeval
-Title: A friendly interface to tidyeval for the casual dplyr user.
+Title: A Friendly Interface to Tidyeval
 Version: 0.0.1
 Authors@R: person("Miles", "McBain", email = "miles.mcbain@gmail.com", role = c("aut", "cre"))
 Description: Provides an alternative auto-complete friendly interface to rlang

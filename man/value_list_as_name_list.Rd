@@ -4,10 +4,10 @@
 \alias{value_list_as_name_list}
 \title{value_list_as_name_list}
 \usage{
-value_list_as_name_list(x)
+value_list_as_name_list(arg)
 }
 \arguments{
-\item{a_value}{}
+\item{arg}{the argument that holds a list of values to be used as column names.}
 }
 \value{
 something that will resolve to a comma separated list of column
@@ -26,6 +26,7 @@ used with ... to transform all ... values to column names - see
 `select_these3` example.
 }
 \examples{
+\dontrun{
 select_these2 <- function(dat, cols){
   select(dat, !!!value_list_as_name_list(cols))
 }
@@ -41,4 +42,5 @@ select_not_these <- function(dat, cols){
   select(dat, -c(!!!value_list_as_name_list(cols)))
 }
 select_not_these(mtcars, cols = c("cyl", "wt"))
+}
 }
