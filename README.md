@@ -1,6 +1,6 @@
 # friendlyeval
 
-[![Travis-CI Build Status](https://travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval)
+[![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval)
 
 
 A friendly interface to tidyeval/`rlang` for the casual dplyr user.
