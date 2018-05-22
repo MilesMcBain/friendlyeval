@@ -97,7 +97,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form
-    reverse_dplyr::group_by(mtcars, gear, am)
+    reverse_group_by(mtcars, gear, am)
   },
   {
     reverse_group_by <- function(dat, ...) {
@@ -108,7 +108,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form
-    reverse_dplyr::group_by(mtcars, gear, am)
+    reverse_group_by(mtcars, gear, am)
   })
   
   expect_equal_({
@@ -119,7 +119,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form:
-    reverse_dplyr::group_by(mtcars, c('gear', 'am'))
+    reverse_group_by(mtcars, c('gear', 'am'))
     
   },
   {
@@ -130,7 +130,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form:
-    reverse_dplyr::group_by(mtcars, c('gear', 'am'))
+    reverse_group_by(mtcars, c('gear', 'am'))
   })
   
   expect_equal_({
@@ -142,7 +142,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form:
-    reverse_dplyr::group_by(mtcars, 'gear', 'am')
+    reverse_group_by(mtcars, 'gear', 'am')
     
   },
   {
@@ -154,7 +154,7 @@ test_that("friendlyeval is equivalent to rlang functions", {
     }
     
     ## working call form:
-    reverse_dplyr::group_by(mtcars, 'gear', 'am')
+    reverse_group_by(mtcars, 'gear', 'am')
   })
   
   expect_equal_({

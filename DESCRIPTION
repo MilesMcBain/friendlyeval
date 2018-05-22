@@ -6,13 +6,14 @@ Description: Provides an alternative auto-complete friendly interface to rlang
     that is more closely aligned with the task domain of a user 'programming with
     dplyr'. Facility is provided to replace friendlyeval functions with their rlang
     equivalents after protyping a solution.
-Depends: R (>= 3.4.4)
+Depends: R (>= 3.4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: rlang,
     purrr,
-    tibble
+    tibble,
+    rstudioapi
 RoxygenNote: 6.0.1
 Suggests: testthat,
     dplyr
