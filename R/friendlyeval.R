@@ -42,16 +42,14 @@ typed_as_name <- rlang::enquo
 ##' my_mutate1 <- function(dat, col_name){
 ##'
 ##' mutate(dat,
-##'       !!typed_as_name_lhs(colname) := 1
+##'       !!typed_as_name_lhs(col_name) := 1
 ##'       )
 ##' }
 ##'
 ##' mtcars %>%
 ##'   my_mutate1(cyl)
 ##' @export
-typed_as_name_lhs <- function(arg){
-  quo_name(eval.parent(enquo(arg)))
-}
+typed_as_name_lhs <- rlang::ensym
 
 ##' Take what was typed for a comma separated list of parameters and pass it to
 ##' a another function as a comma separated list of column names

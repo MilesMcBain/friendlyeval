@@ -3,7 +3,7 @@
   tibble::tribble(
     ~friendly, ~rlang,
     "typed_as_name", "rlang::enquo",
-    "typed_as_name_lhs", "rlang::quo_name",
+    "typed_as_name_lhs", "rlang::ensym",
     "typed_list_as_name_list", "rlang::enquos",
     "value_as_name", "rlang::sym",
     "value_list_as_name_list", "rlang::syms"

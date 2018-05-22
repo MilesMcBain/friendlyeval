@@ -12,12 +12,13 @@ mutate_this(cyl)
 my_mutate1 <- function(dat, col_name){
   
   mutate(dat,
-         !!typed_as_name_lhs(colname) := 1
+         !!typed_as_name_lhs(col_name) := 1
          )
 }
 
 mtcars %>%
-  my_mutate1(cyl)
+  my_mutate1(cyl1) %>%
+  head()
 
 my_mutate2 <- function(dat, col_name){
   
@@ -25,6 +26,7 @@ my_mutate2 <- function(dat, col_name){
          !!col_name := 1
          )
 }
+
 
 mtcars %>%
   my_mutate2("cyl")
@@ -41,6 +43,49 @@ my_mutate <- function(df, expr) {
 }
 
 my_mutate(mtcars, cyl)
+
+double_col <- function(dat, arg, result){
+  ## note usage of ':=' for lhs eval. 
+  mutate(dat, !!typed_as_name_lhs(result) := !!typed_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, cyl, cylx2) %>%
+  head()
+
+double_col <- function(dat, arg, result){
+  ## note usage of ':=' for lhs eval. 
+  mutate(dat, !!value_as_name(result) := !!value_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, arg = 'cyl',  result = 'cylx2')
+
+
+reverse_group_by <- function(dat, ...){
+  groups <- typed_list_as_name_list(...)
+
+  group_by(dat, !!!rev(groups))
+}
+
+reverse_group_by(mtcars, gear, am)
+
+reverse_group_by <- function(dat, columns){
+  groups <- value_list_as_name_list(columns)
+
+  group_by(dat, !!!rev(groups))
+}
+
+reverse_group_by(mtcars, c('gear', 'am'))
+
+reverse_group_by <- function(dat, ...){
+  ## note the list() around ... to collect the arguments into a list.
+  groups <- value_list_as_name_list(list(...)) 
+
+  group_by(dat, !!!rev(groups))
+}
+
+reverse_group_by(mtcars, 'gear', 'am')
 
 ### Splicing
 

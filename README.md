@@ -29,7 +29,7 @@ Our `double_col` doesn't perform the same special argument handling as `dplyr`.
 So we might try:
 
 ```
-double_col(mtcars, arg = "cyl")
+double_col(mtcars, arg = 'cyl')
 
 # Error in mutate_impl(.data, dots) : 
 #  Evaluation error: non-numeric argument to binary operator.
@@ -82,9 +82,72 @@ double_col <- function(dat, arg){
 }
 
 ## working call form:
-double_col(mtcars, arg = "cyl")
+double_col(mtcars, arg = 'cyl')
 ```
 
-### Supplying names to be assigned to (lhs variant)
+### Supplying column names to be assigned to (lhs variant)
+A more useful version of `double_col` allows the name of the result column to be set. Here's using what was typed, `dplyr` style:
+
+```
+double_col <- function(dat, arg, result){
+  ## note usage of ':=' for lhs eval. 
+  mutate(dat, !!typed_as_name_lhs(result) := !!typed_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, cyl, cylx2) 
+```
+And using supplied values:
+
+```
+double_col <- function(dat, arg, result){
+  ## note usage of ':=' for lhs eval. 
+  mutate(dat, !!value_as_name(result) := !!value_as_name(arg)*2)
+}
+
+## working call form:
+double_col(mtcars, arg = 'cyl',  result = 'cylx2')
+
+```
+A quirk in the `rlang` framework means we only need the lhs variant when passing what was typed.
 
 ### Working with argument lists
+When wrapping `group_by` it's likely you'll want to pass a list of column names. Here's how that is done using what was typed, `dplyr` style:
+
+```
+reverse_group_by <- function(dat, ...){
+  ## this expression is split out for readability, but it can be nested into below.
+  groups <- typed_list_as_name_list(...)
+
+  group_by(dat, !!!rev(groups))
+}
+
+## working call form
+reverse_group_by(mtcars, gear, am)
+
+```
+
+and using a list of values:
+```
+reverse_group_by <- function(dat, columns){
+  groups <- value_list_as_name_list(columns)
+
+  group_by(dat, !!!rev(groups))
+}
+
+## working call form:
+reverse_group_by(mtcars, c('gear', 'am'))
+```
+
+or using the values of `...`:
+```
+reverse_group_by <- function(dat, ...){
+  ## note the list() around ... to collect the arguments into a list.
+  groups <- value_list_as_name_list(list(...)) 
+
+  group_by(dat, !!!rev(groups))
+}
+
+## working call form:
+reverse_group_by(mtcars, 'gear', 'am')
+```
