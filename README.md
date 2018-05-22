@@ -5,9 +5,6 @@ This package provides an alternative auto-complete friendly interface to `rlang`
 
 The interface can convert itself to standard `rlang` with the help of an RStudio addin that replaces `friendlyeval` functions with their `rlang` equivalents. This will allow you to prototype in friendly, then subsequently automagically transform to `rlang`. Your friends won't know the difference.
 
-# TODO
-I aim to explain the use of `friendyeval` here in simple task-oriented language in under 900 words, meaning the average `dplyr` programmer should know how to use it in under 3 minutes. 
-
 # Writing Functions that call `dplyr`
 
 `dplyr` functions try to be user-friendly by saving you typing. They allow to one to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of the more cumbersome base R style: `data$col =abs(data$col2); data$col3 = data$col4*100`.
