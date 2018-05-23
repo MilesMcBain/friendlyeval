@@ -184,4 +184,19 @@ test_that("friendlyeval is equivalent to rlang functions", {
     select_these3(mtcars, c("cyl", "wt"))
   })
   
+  expect_equal_({
+
+    filter_same <- function(dat, x, y) {
+      dplyr::filter(dat, !!typed_as_name(x) == !!typed_as_name(y))
+    }
+
+    filter_same(mtcars, carb, gear)
+  },
+  {
+    filter_same <- function(dat, x, y) {
+      dplyr::filter(dat, !!rlang::enquo(x) == !!rlang::enquo(y))
+    }
+
+    filter_same(mtcars, carb, gear)
+  })
 })

@@ -22,6 +22,11 @@
 ##'  mutate(mtcars, result = mean(!!typed_as_name(a_col)))
 ##' }
 ##' mutate_this(cyl)
+##'
+##' filter_same <- function(dat, x, y) {
+##'  dplyr::filter(dat, !!typed_as_name(x) == !!typed_as_name(y))
+##' }
+##' filter_same(mtcars, carb, gear)
 ##' }
 ##' @export
 typed_as_name <- rlang::enquo
