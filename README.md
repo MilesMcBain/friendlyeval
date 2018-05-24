@@ -39,7 +39,7 @@ Those were our only options under normal evaluation rules! There are two ways to
 1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
 2. Instruct `dplyr` to evaluate the **value** bound to `arg` - "cyl" - as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
-`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to treat function arguments. It contains these 5 functions:
+`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to evaluate function arguments. It contains these 5 functions:
  
  function | usage 
  --- | --- 
