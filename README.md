@@ -36,18 +36,18 @@ double_col(mtcars, arg = 'cyl')
 #  Evaluation error: non-numeric argument to binary operator.
 ```
 Those were our only options under normal evaluation rules! There are two ways to make `double_col` work:
-1. Instruct `dplyr` to use the literal value of whatever expression was **typed** by your caller for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
-2. Instruct `dplyr` to use the **value** bound to `arg` - "cyl" - as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
+1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a column **name**. So `double_col(mtcars, cyl)` would work.
+2. Instruct `dplyr` to evaluate the **value** bound to `arg` - "cyl" - as a column **name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
 `friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to treat function arguments. It contains these 5 functions:
  
  function | usage 
  --- | --- 
- `typed_as_name` | Use the expression that was typed by your function's caller as a `dplyr` column name.
- `typed_as_name_lhs` | Use the expression that was typed by your function's caller as a `dplyr` column name on the left hand side of an internal assignment eg: `mutate(lhs_col = 1)`.
- `typed_list_as_name_list` | Use a comma separated list of expressions typed by your function's caller as a comma separated list of `dplyr` column names. 
- `value_as_name` | Use the value your function argument takes as a `dplyr` column name.
- `value_list_as_name_list` | Use a list of values as a list of `dplyr` column names.
+ `eval_input_as_name` | Use the expression that was input by your function's caller as a `dplyr` column name.
+ `eval_input_as_lhs` | Use the expression that was input by your function's caller as a `dplyr` column name on the left hand side of an internal assignment eg: `mutate(lhs_col = 1)`.
+ `eval_inputs_as_list` | Use a comma separated list of expressions input by your function's caller as a comma separated list of `dplyr` column names. 
+ `eval_value_as_name` | Use the value your function argument takes as a `dplyr` column name.
+ `eval_values_as_list` | Use a list of values as a list of `dplyr` column names.
   
 Which are used with these 3 operators:
  
@@ -59,7 +59,7 @@ Which are used with these 3 operators:
 
 `!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
 
-`:=` is used in place of `=` in the special case where we need to evaluate to resolve a column name on the left hand side of an `=` like in `mutate(!!typed_as_name_lhs(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!typed_as_name_lhs(colname) := rownumber)`
+`:=` is used in place of `=` in the special case where we need to evaluate to resolve a column name on the left hand side of an `=` like in `mutate(!!eval_input_as_lhs(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!eval_input_as_lhs(colname) := rownumber)`
   
 ## Usage Examples
 
@@ -68,7 +68,7 @@ Using what was typed, `dplyr` style:
 
 ```
 double_col <- function(dat, arg){
-  mutate(dat, result = !!typed_as_name(arg)*2)
+  mutate(dat, result = !!eval_input_as_name(arg)*2)
 }
 
 ## working call form:
@@ -79,7 +79,7 @@ Using supplied value:
 
 ```
 double_col <- function(dat, arg){
-  mutate(dat, result = !!value_as_name(arg)*2)
+  mutate(dat, result = !!eval_value_as_name(arg)*2)
 }
 
 ## working call form:
@@ -92,7 +92,7 @@ A more useful version of `double_col` allows the name of the result column to be
 ```
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
-  mutate(dat, !!typed_as_name_lhs(result) := !!typed_as_name(arg)*2)
+  mutate(dat, !!eval_input_as_lhs(result) := !!eval_input_as_name(arg)*2)
 }
 
 ## working call form:
@@ -103,7 +103,7 @@ And using supplied values:
 ```
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
-  mutate(dat, !!value_as_name(result) := !!value_as_name(arg)*2)
+  mutate(dat, !!eval_value_as_name(result) := !!eval_value_as_name(arg)*2)
 }
 
 ## working call form:
@@ -118,7 +118,7 @@ When wrapping `group_by` it's likely you'll want to pass a list of column names.
 ```
 reverse_group_by <- function(dat, ...){
   ## this expression is split out for readability, but it can be nested into below.
-  groups <- typed_list_as_name_list(...)
+  groups <- eval_inputs_as_list(...)
 
   group_by(dat, !!!rev(groups))
 }
@@ -131,7 +131,7 @@ reverse_group_by(mtcars, gear, am)
 and using a list of values:
 ```
 reverse_group_by <- function(dat, columns){
-  groups <- value_list_as_name_list(columns)
+  groups <- eval_values_as_list(columns)
 
   group_by(dat, !!!rev(groups))
 }
@@ -144,7 +144,7 @@ or using the values of `...`:
 ```
 reverse_group_by <- function(dat, ...){
   ## note the list() around ... to collect the arguments into a list.
-  groups <- value_list_as_name_list(list(...)) 
+  groups <- eval_values_as_list(list(...)) 
 
   group_by(dat, !!!rev(groups))
 }
