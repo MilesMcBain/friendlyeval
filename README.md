@@ -39,7 +39,11 @@ Those were our only options under normal evaluation rules! There are two ways to
 1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
 2. Instruct `dplyr` to evaluate the **value** bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
-`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to evaluate function arguments. There are four types of things arguments can be evaluated as:
+`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to evaluate function arguments. 
+
+## Functions
+
+There are four types of things arguments can be evaluated as:
 * column names e.g. in `select(mtcars, mpg)`, `mpg` is a column name.
 * expressions e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression.
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
@@ -58,14 +62,15 @@ The package contains these 8 functions:
  `eval_value_as_expr` | Use the value your function argument takes as an expression involving a `dplyr` column name. 
  `eval_values_as_exprs` | Use a list of values as a list of expressions involving `dplyr` column names.
  
-  
-Which are used with these 3 operators:
+    
+## Operators
+
+The functions are used with these 3 operators:
  
   * `!!`
   * `!!!`
   * `:=`
-  
-## Operators
+
 `!!` and `!!!` are signposts that tell `dplyr`: *"Stop! This needs to be
 evaluated to resolve to one or more column names or expressions"*. 
 
