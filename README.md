@@ -43,7 +43,7 @@ Those were our only options under normal evaluation rules! There are two ways to
 
 ## Functions
 
-There are four types of things arguments can be evaluated as:
+When passing arguments from your functions to `dplyr` functions, there are four types of things arguments can be evaluated as:
 * column names e.g. in `select(mtcars, mpg)`, `mpg` is a column name.
 * expressions e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression.
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
