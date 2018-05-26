@@ -29,36 +29,18 @@
 ##' filter_same(mtcars, carb, gear)
 ##' }
 ##' @export
-typed_as_name <- rlang::enquo
+eval_input_as_col <- rlang::ensym
 
-##' Take what was typed and use it as a column name argument in dplyr on the
-##' left hand side of a parameter assignment, '='.
+
+##' .. content for \description{} (no empty lines) ..
 ##'
-##' This is used inside a function to pass the literal text of what the user
-##' typed as a function argument to another function. This function applies in
-##' the special case that the text is intended to be used on the left hand side
-##' of a parameter assignment '='. For example to replace `my_col` in `mutate(my_col = pi)`.
-##' In this case the call must be rewritten as
-##' `mutate(!!typed_as_name_lhs(my_col) := pi)`. Note the usage of `:=`. This is
-##' an additional requirement when using !! on the left hand side of a parameter assignment.
-##' @title typed_as_name_lhs
-##' @usage typed_as_name_lhs(arg)
-##' @param arg the argument to convert to a column name
-##' @return Something that will resolve to a column name when prefixed with `!!`
-##' @examples
-##' \dontrun{
-##' my_mutate1 <- function(dat, col_name){
-##'
-##' mutate(dat,
-##'       !!typed_as_name_lhs(col_name) := 1
-##'       )
-##' }
-##'
-##' mtcars %>%
-##'   my_mutate1(cyl)
-##' }
+##' .. content for \details{} ..
+##' @title 
+##' @param arg 
+##' @return
 ##' @export
-typed_as_name_lhs <- rlang::ensym
+eval_input_as_expr <- rlang::enquo
+
 
 ##' Take what was typed for a comma separated list of parameters and pass it to
 ##' a another function as a comma separated list of column names
@@ -82,7 +64,18 @@ typed_as_name_lhs <- rlang::ensym
 ##' select_these(mtcars, cyl, wt)
 ##' }
 ##' @export
-typed_list_as_name_list <- function(...){
+eval_inputs_as_cols <- function(...){
+  eval.parent(rlang::ensyms(...))
+}
+
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param arg 
+##' @return
+##' @export
+eval_inputs_as_exprs <- function(...){
   eval.parent(rlang::enquos(...))
 }
 
@@ -104,7 +97,7 @@ typed_list_as_name_list <- function(...){
 ##'  select(-!!value_as_name(b))
 ##' }
 ##' @export
-value_as_name <- function(arg){
+eval_value_as_col <- function(arg){
   rlang::sym(arg)
 }
 
@@ -142,6 +135,27 @@ value_as_name <- function(arg){
 ##' select_not_these(mtcars, cols = c("cyl", "wt"))
 ##' }
 ##' @export
-value_list_as_name_list <- function(arg){
+eval_values_as_cols <- function(arg){
   rlang::syms(arg)
+}
+
+
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param arg 
+##' @return
+##' @export
+eval_value_as_expr <- rlang::parse_expr
+
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title 
+##' @param arg 
+##' @return
+##' @export
+eval_values_as_exprs <- function(arg){
+  rlang::parse_exprs(textConnection(unlist(arg)))
 }
