@@ -39,14 +39,20 @@ Those were our only options under normal evaluation rules! There are two ways to
 1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
 2. Instruct `dplyr` to evaluate the **value** bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
-`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to evaluate function arguments. It contains these 8 functions:
+`friendlyeval` provides a set of functions and operators for issuing dplyr these kind of instructions about how to evaluate function arguments. There are four types of things arguments can be evaluated as:
+* column names e.g. in `select(mtcars, mpg)`, `mpg` is a column name.
+* expressions e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression.
+* lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
+* lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
+
+The package contains these 8 functions:
  
  function | usage 
  --- | --- 
  `eval_input_as_col` | Use the text that was input by your function's caller as a `dplyr` column name.
  `eval_inputs_as_cols` | Use a comma separated list of arguments input by your function's caller as a comma separated list of `dplyr` column names.
-`eval_input_as_expr` | Use the text that was input by your function's caller as an expression involving `dplyr` colum name eg: in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving col1.
-`eval_inputs_as_exprs` | Use a comma separated list of expressions input by your function's caller as a list of expressions involving `dplyr` column names.
+`eval_input_as_expr` | Use the text that was input by your function's caller as an expression eg: in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving col1.
+`eval_inputs_as_exprs` | Use a comma separated list of expressions input by your function's caller as a list of expressions.
  `eval_value_as_col` | Use the value your function argument takes as a `dplyr` column name.
  `eval_values_as_cols` | Use a list of values as a list of `dplyr` column names.
  `eval_value_as_expr` | Use the value your function argument takes as an expression involving a `dplyr` column name. 
@@ -60,8 +66,11 @@ Which are used with these 3 operators:
   * `:=`
   
 ## Operators
+`!!` and `!!!` are signposts that tell `dplyr`: *"Stop! This needs to be
+evaluated to resolve to one or more column names or expressions"*. 
 
-`!!` and `!!!` are signposts that tell `dplyr`: "Stop! This needs to be evaluated to resolve to one or more column names". `!!` tells `dplyr` to expect a single column name, while `!!!` says to expect a list of column names. 
+`!!` tells `dplyr` to expect
+a single column name or expression, while `!!!` says to expect a list of column names or expressions.
 
 `:=` is used in place of `=` in the special case where we need to evaluate to
 resolve a column name on the left hand side of an `=` like in
