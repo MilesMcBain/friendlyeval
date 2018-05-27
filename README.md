@@ -49,7 +49,7 @@ When passing arguments from your functions to `dplyr` functions, there are four 
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
 * lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
 
-These 8 functions address instructing `dplry` to resolve these 4 outputs using either the literal input typed for arguments to your function by the caller, or the argument values:
+These 8 functions address instructing `dplyr` to resolve these 4 outputs using either the literal input typed for your function's arguments by the caller, or the argument values:
  
  function | usage 
  --- | --- 
@@ -109,7 +109,7 @@ double_col(mtcars, arg = 'cyl')
 ```
 
 ### Supplying column names to be assigned to (lhs variant)
-A more useful version of `double_col` allows the name of the result column to be set. Here's using what was typed, `dplyr` style:
+A more useful version of `double_col` allows the name of the result column to be set. Here's using what was input, `dplyr` style:
 
 ```
 double_col <- function(dat, arg, result){
@@ -134,7 +134,7 @@ double_col(mtcars, arg = 'cyl',  result = 'cylx2')
 ```
 
 ### Working with argument lists containing column names
-When wrapping `group_by` it's likely you'll want to pass a list of column names. Here's how that is done using what was typed, `dplyr` style:
+When wrapping `group_by` it's likely you'll want to pass a list of column names. Here's how that is done using what was input, `dplyr` style:
 
 ```
 reverse_group_by <- function(dat, ...){
@@ -177,7 +177,9 @@ reverse_group_by(mtcars, 'gear', 'am')
 ### Passing expressions involving columns
 Using the `_expr` functions, you can pass expressions involving column names to `dplyr` functions like `filter`, `mutate` and `summarise`.
 
-For a simple case involving a single expression consider a more general version of the `double_col` function from above, called `double_anything`, that can take expressions involving columns:
+An example case involving a single expression is a more general version
+of the `double_col` function from above, called `double_anything`, that can take
+expressions involving columns:
 
 ``` 
 double_anything <- function(dat, arg){
@@ -195,7 +197,7 @@ double_anything(mtcars, cyl*am)
 ## 5  18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2      0
 ```
 
-A common usage pattern is to take a list of expressions. Consider the `filter_louly` function that reports the number of rows filtered:
+A common usage pattern is to take a list of expressions. Consider the `filter_loudly` function that reports the number of rows filtered:
 
 ```
 filter_loudly(mtcars, cyl >= 6, am == 1) 
@@ -263,8 +265,8 @@ filter_loudly <- function(x, ...){
 It may have occurred to you that there are cases where a column name is a valid
 expression and vice versa. This is true, and it means in some situations you
 could switch the `_col` and the `_expr` versions of functions and things would
-continue to work. E.g. `input_as_expr` in place of `input_as_col`. Using the
+continue to work. E.g. `eval_input_as_expr` in place of `eval_input_as_col`. Using the
 `col` version where appropriate invokes checks that assert what was passed can be
 interpreted as a simple column name. This is useful in situations where
-expressions are not permitted like in `select` or on the left hand side of the
+expressions are not permitted, like in `select` or on the left hand side of the
 internal assignment in `mutate`: i.e. `mutate(lhs_col = some_expr)`.
