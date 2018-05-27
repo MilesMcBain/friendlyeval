@@ -36,20 +36,24 @@ double_col(mtcars, arg = 'cyl')
 #  Evaluation error: non-numeric argument to binary operator.
 ```
 Those were our only options under normal evaluation rules! There are two ways to make `double_col` work:
-1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
-2. Instruct `dplyr` to evaluate the **string** value bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
+1. Instruct `dplyr` to treat the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
+2. Instruct `dplyr` to treat the **string** value bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
-`friendlyeval` provides a set of functions and operators for issuing `dplyr` these kind of instructions about how to evaluate function arguments. 
+`friendlyeval` provides a set of functions and operators for issuing `dplyr`
+these kind of instructions about how to treat function arguments.
 
 ## Functions
 
-When passing arguments from your functions to `dplyr` functions, there are four types of things arguments can be evaluated as:
+When passing arguments from your functions to `dplyr` functions, there are four
+types of things arguments can be treated as:
 * column names e.g. in `select(mtcars, mpg)`, `mpg` is a column name.
 * expressions e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression.
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
 * lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
 
-These 8 functions address instructing `dplyr` to resolve these 4 outputs using either the literal input typed for your function's arguments by the caller, or the string value of the argument:
+These 8 functions address instructing `dplyr` to resolve these 4 outputs using
+either the literal input typed for your function's arguments by the caller, or
+the string values of the arguments:
  
  function | usage 
  --- | --- 
@@ -77,7 +81,7 @@ evaluated to resolve to one or more column names or expressions"*.
 `!!` tells `dplyr` to expect
 a single column name or expression, while `!!!` says to expect a list of column names or expressions.
 
-`:=` is used in place of `=` in the special case where we need to evaluate to
+`:=` is used in place of `=` in the special case where we need `dplyr` to
 resolve a column name on the left hand side of an `=` like in
 `mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand
 side in this example is not legal R syntax, so instead we must write:
