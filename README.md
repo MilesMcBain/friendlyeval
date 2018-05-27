@@ -37,7 +37,7 @@ double_col(mtcars, arg = 'cyl')
 ```
 Those were our only options under normal evaluation rules! There are two ways to make `double_col` work:
 1. Instruct `dplyr` to evaluate the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
-2. Instruct `dplyr` to evaluate the **value** bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
+2. Instruct `dplyr` to evaluate the **string** value bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
 `friendlyeval` provides a set of functions and operators for issuing `dplyr` these kind of instructions about how to evaluate function arguments. 
 
@@ -49,18 +49,18 @@ When passing arguments from your functions to `dplyr` functions, there are four 
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
 * lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
 
-These 8 functions address instructing `dplyr` to resolve these 4 outputs using either the literal input typed for your function's arguments by the caller, or the argument values:
+These 8 functions address instructing `dplyr` to resolve these 4 outputs using either the literal input typed for your function's arguments by the caller, or the string value of the argument:
  
  function | usage 
  --- | --- 
- `eval_input_as_col` | Use the text that was input by your function's caller as a `dplyr` column name.
- `eval_inputs_as_cols` | Use a comma separated list of arguments input by your function's caller as a comma separated list of `dplyr` column names.
-`eval_input_as_expr` | Use the text that was input by your function's caller as an expression eg: in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving col1.
-`eval_inputs_as_exprs` | Use a comma separated list of expressions input by your function's caller as a list of expressions.
- `eval_value_as_col` | Use the value your function argument takes as a `dplyr` column name.
- `eval_values_as_cols` | Use a list of values as a list of `dplyr` column names.
- `eval_value_as_expr` | Use the value your function argument takes as an expression involving a `dplyr` column name. 
- `eval_values_as_exprs` | Use a list of values as a list of expressions involving `dplyr` column names.
+ `treat_input_as_col` | Use the text that was input by your function's caller as a `dplyr` column name.
+ `treat_inputs_as_cols` | Use a comma separated list of arguments input by your function's caller as a comma separated list of `dplyr` column names.
+`treat_input_as_expr` | Use the text that was input by your function's caller as an expression eg: in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving col1.
+`treat_inputs_as_exprs` | Use a comma separated list of expressions input by your function's caller as a list of expressions.
+ `treat_string_as_col` | Use the character value your function argument takes as a `dplyr` column name.
+ `treat_strings_as_cols` | Use a list of character values as a list of `dplyr` column names.
+ `treat_string_as_expr` | Use the character value your function argument takes as an expression involving a `dplyr` column name. 
+ `treat_strings_as_exprs` | Use a list of character values as a list of expressions involving `dplyr` column names.
  
     
 ## Operators
@@ -79,9 +79,9 @@ a single column name or expression, while `!!!` says to expect a list of column 
 
 `:=` is used in place of `=` in the special case where we need to evaluate to
 resolve a column name on the left hand side of an `=` like in
-`mutate(!!eval_input_as_col(colname) = rownumber)`. Evaluating on the left hand
+`mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand
 side in this example is not legal R syntax, so instead we must write:
-`mutate(!!eval_input_as_col(colname) := rownumber)`
+`mutate(!!treat_input_as_col(colname) := rownumber)`
   
 ## Usage Examples
 
@@ -90,7 +90,7 @@ Using what was typed, `dplyr` style:
 
 ```
 double_col <- function(dat, arg){
-  mutate(dat, result = !!eval_input_as_col(arg)*2)
+  mutate(dat, result = !!treat_input_as_col(arg)*2)
 }
 
 ## working call form:
@@ -101,7 +101,7 @@ Using supplied value:
 
 ```
 double_col <- function(dat, arg){
-  mutate(dat, result = !!eval_value_as_col(arg)*2)
+  mutate(dat, result = !!treat_string_as_col(arg)*2)
 }
 
 ## working call form:
@@ -114,7 +114,7 @@ A more useful version of `double_col` allows the name of the result column to be
 ```
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
-  mutate(dat, !!eval_input_as_col(result) := !!eval_input_as_col(arg)*2)
+  mutate(dat, !!treat_input_as_col(result) := !!treat_input_as_col(arg)*2)
 }
 
 ## working call form:
@@ -125,7 +125,7 @@ And using supplied values:
 ```
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
-  mutate(dat, !!eval_value_as_col(result) := !!eval_value_as_col(arg)*2)
+  mutate(dat, !!treat_string_as_col(result) := !!treat_string_as_col(arg)*2)
 }
 
 ## working call form:
@@ -139,7 +139,7 @@ When wrapping `group_by` it's likely you'll want to pass a list of column names.
 ```
 reverse_group_by <- function(dat, ...){
   ## this expression is split out for readability, but it can be nested into below.
-  groups <- eval_inputs_as_cols(...)
+  groups <- treat_inputs_as_cols(...)
 
   group_by(dat, !!!rev(groups))
 }
@@ -152,7 +152,7 @@ reverse_group_by(mtcars, gear, am)
 and using a list of values:
 ```
 reverse_group_by <- function(dat, columns){
-  groups <- eval_values_as_cols(columns)
+  groups <- treat_strings_as_cols(columns)
 
   group_by(dat, !!!rev(groups))
 }
@@ -165,7 +165,7 @@ or using the values of `...`:
 ```
 reverse_group_by <- function(dat, ...){
   ## note the list() around ... to collect the arguments into a list.
-  groups <- eval_values_as_cols(list(...)) 
+  groups <- treat_strings_as_cols(list(...)) 
 
   group_by(dat, !!!rev(groups))
 }
@@ -183,7 +183,7 @@ expressions involving columns:
 
 ``` 
 double_anything <- function(dat, arg){
-  mutate(dat, result = !!eval_input_as_expr(arg))
+  mutate(dat, result = !!treat_input_as_expr(arg))
 }
 
 ## working call form:
@@ -215,7 +215,7 @@ You can implement this function using filtering expressions as input by the call
 ```
 filter_loudly <- function(x, ...){
   in_rows <- nrow(x)
-  out <- filter(x, !!!eval_inputs_as_exprs(...))
+  out <- filter(x, !!!treat_inputs_as_exprs(...))
   out_rows <- nrow(out)
   message("Filtered out ",in_rows-out_rows," rows.")
   return(out)
@@ -233,7 +233,7 @@ filter_loudly <- function(x, filter_expressions){
   stopifnot(purrr::every(filter_expressions, is.character))
   
   in_rows <- nrow(x)
-  out <- filter(x, !!!eval_values_as_exprs(filter_expressions))
+  out <- filter(x, !!!treat_strings_as_exprs(filter_expressions))
   out_rows <- nrow(out)
   message("Filtered out ",in_rows-out_rows," rows.")
   return(out)
@@ -251,7 +251,7 @@ filter_loudly <- function(x, ...){
   stopifnot(purrr::every(dots, is.character))
   
   in_rows <- nrow(x)
-  out <- filter(x, !!!eval_values_as_exprs(dots))
+  out <- filter(x, !!!treat_strings_as_exprs(dots))
   out_rows <- nrow(out)
   message("Filtered out ",in_rows-out_rows," rows.")
   return(out) 
@@ -265,7 +265,7 @@ filter_loudly <- function(x, ...){
 It may have occurred to you that there are cases where a column name is a valid
 expression and vice versa. This is true, and it means in some situations you
 could switch the `_col` and the `_expr` versions of functions and things would
-continue to work. E.g. `eval_input_as_expr` in place of `eval_input_as_col`. Using the
+continue to work. E.g. `treat_input_as_expr` in place of `treat_input_as_col`. Using the
 `col` version where appropriate invokes checks that assert what was passed can be
 interpreted as a simple column name. This is useful in situations where
 expressions are not permitted, like in `select` or on the left hand side of the
