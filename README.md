@@ -49,7 +49,7 @@ When passing arguments from your functions to `dplyr` functions, there are four 
 * lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
 * lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
 
-These 8 functions address resolving these 4 outputs using either the literal input passed as arguments to your function by the caller, or the argument values:
+These 8 functions address instructing `dplry` to resolve these 4 outputs using either the literal input typed for arguments to your function by the caller, or the argument values:
  
  function | usage 
  --- | --- 
