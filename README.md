@@ -1,19 +1,19 @@
 # friendlyeval
 
-[![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval) [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental) 
+[![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval) [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 
-A friendly interface to tidyeval/`rlang` for the casual dplyr user.
+A friendly interface to the **tidy eval** framework and the [`rlang`](http://rlang.r-lib.org/) package for casual [`dplyr`](https://dplyr.tidyverse.org/) users.
 
-This package provides an alternative auto-complete friendly interface to `rlang` that is more closely aligned with the task domain of a user 'programming with dplyr'. It implements most of the cases in the 'programming with dplyr' vignette.
+This package provides an alternative, auto-complete friendly interface to `rlang` that is more closely aligned with the task domain of a user 'programming with dplyr'. It implements most of the cases in the ['programming with dplyr'](https://dplyr.tidyverse.org/articles/programming.html) vignette.
 
-The interface can convert itself to standard `rlang` with the help of an RStudio addin that replaces `friendlyeval` functions with their `rlang` equivalents. This will allow you to prototype in friendly, then subsequently automagically transform to `rlang`. Your friends won't know the difference.
+The interface can convert itself to standard `rlang` with the help of an [RStudio addin](https://rstudio.github.io/rstudioaddins/) that replaces `friendlyeval` functions with their `rlang` equivalents. This will allow you to prototype in friendly, then subsequently automagically transform to `rlang`. Your friends won't know the difference.
 
 # Writing Functions that call `dplyr`
 
-`dplyr` functions try to be user-friendly by saving you typing. They allow to one to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of the more cumbersome base R style: `data$col =abs(data$col2); data$col3 = data$col4*100`.
+`dplyr` functions try to be user-friendly by saving you typing. This allows you to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of the more cumbersome base R style: `data$col =abs(data$col2); data$col3 = data$col4*100`.
 
-This cost of this convenience is more work when we want to write functions that call `dplyr` since `dplyr` needs to be instructed how to treat the arguments we pass it. For example this function does not work as we might expect:
+The cost of this convenience is more work when we want to write functions that call `dplyr`, because `dplyr` needs to be instructed how to *treat* the arguments we pass to it. For example, this function does not work as we might expect:
 
 ```
 double_col <- function(dat, arg){
@@ -25,72 +25,63 @@ double_col(mtcars, cyl)
 # Error in mutate_impl(.data, dots) : 
 #   Evaluation error: object 'cyl' not found.
 ```
-Our `double_col` doesn't perform the same special argument handling as `dplyr`.
+This is because our `double_col` function doesn't perform the same special argument handling as `dplyr`.
 
 So we might try:
-
 ```
 double_col(mtcars, arg = 'cyl')
 
 # Error in mutate_impl(.data, dots) : 
 #  Evaluation error: non-numeric argument to binary operator.
 ```
-Those were our only options under normal evaluation rules! There are two ways to make `double_col` work:
-1. Instruct `dplyr` to treat the literal **input** provided by your caller for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
-2. Instruct `dplyr` to treat the **string** value bound to `arg` - "cyl" - as a **column name**, rather than treat it as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
 
-`friendlyeval` provides a set of functions and operators for issuing `dplyr`
-these kind of instructions about how to treat function arguments.
+Those were our only options under normal evaluation rules! Fortunately, there are two ways to make `double_col` work:
+
+1. Instruct `dplyr` to treat the literal **input** provided for the `arg` argument as a **column name**. So `double_col(mtcars, cyl)` would work.
+2. Instruct `dplyr` to treat the **string** value bound to `arg` - "cyl" - as a **column name**, rather than as a normal character vector. So `double_col(mtcars, arg = "cyl")` would work.
+
+`rlang` provides several functions to communicate these instructions to `dplyr`, but knowing which function to use requires a fairly nuanced understanding of metaprogramming concepts. `friendlyeval` helps bridge that gap by providing a descriptive (and auto-complete friendly) set of functions and operators for issuing `dplyr` these kind of instructions about how to *treat* function arguments.
 
 ## Functions
 
-When passing arguments from your functions to `dplyr` functions, there are four
-types of things arguments can be treated as:
-* column names e.g. in `select(mtcars, mpg)`, `mpg` is a column name.
-* expressions e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression.
-* lists of column names e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names 
-* lists of expressions. e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions.
+Arguments passed from your functions to `dplyr` can be *treated* as:
 
-These 8 functions address instructing `dplyr` to resolve these 4 outputs using
-either the literal input typed for your function's arguments by the caller, or
-the string values of the arguments:
+* column names (e.g. in `select(mtcars, mpg)`, `mpg` is a column name),
+* expressions (e.g. in `filter(mtcars, cyl <= 6)`, `cyl <= 6` is an expression),
+* lists of column names (e.g. in `select(mtcars, mpg, cyl)`, `mpg, cyl` is list of column names), or
+* lists of expressions (e.g. `filter(mtcars, hp >= mean(hp), wt > 3)`, `hp >= mean(hp), wt > 3` is a list of expressions).
+
+`friendlyeval` provides 8 functions that instruct `dplyr` to resolve these 4 outputs using either the literal input provided for your function's arguments or the string values of the arguments:
  
- function | usage 
- --- | --- 
- `treat_input_as_col` | Use the text that was input by your function's caller as a `dplyr` column name.
- `treat_inputs_as_cols` | Use a comma separated list of arguments input by your function's caller as a comma separated list of `dplyr` column names.
-`treat_input_as_expr` | Use the text that was input by your function's caller as an expression eg: in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving col1.
-`treat_inputs_as_exprs` | Use a comma separated list of expressions input by your function's caller as a list of expressions.
- `treat_string_as_col` | Use the character value your function argument takes as a `dplyr` column name.
- `treat_strings_as_cols` | Use a list of character values as a list of `dplyr` column names.
- `treat_string_as_expr` | Use the character value your function argument takes as an expression involving a `dplyr` column name. 
- `treat_strings_as_exprs` | Use a list of character values as a list of expressions involving `dplyr` column names.
- 
+function | usage 
+--- | --- 
+`treat_input_as_col` | Treat the literal text input provided as a `dplyr` column name.
+`treat_inputs_as_cols` | Treat a comma separated list of arguments as a list of `dplyr` column names.
+`treat_input_as_expr` | Treat the literal text input provided as an expression (e.g. in `filter(dat, col1 == 0)`, `col1 == 0` is an expression involving the value of col1).
+`treat_inputs_as_exprs` | Treat a comma separated list of arguments as a list of expressions.
+`treat_string_as_col` | Treat the character value your function argument takes as a `dplyr` column name.
+`treat_strings_as_cols` | Treat a list of character values as a list of `dplyr` column names.
+`treat_string_as_expr` | Treat the character value your function argument takes as an expression involving a `dplyr` column name. 
+`treat_strings_as_exprs` | Treat a list of character values as a list of expressions involving `dplyr` column names.
     
 ## Operators
 
-The functions are used with these 3 operators:
+These 8 functions are used in conjunction with 3 operators:
  
   * `!!`
   * `!!!`
   * `:=`
 
-`!!` and `!!!` are signposts that tell `dplyr`: *"Stop! This needs to be
-evaluated to resolve to one or more column names or expressions"*. 
+`!!` and `!!!` are signposts that tell `dplyr`: *"Stop! This needs to be evaluated to resolve to one or more column names or expressions"*. 
 
-`!!` tells `dplyr` to expect
-a single column name or expression, while `!!!` says to expect a list of column names or expressions.
+`!!` tells `dplyr` to expect a single column name or expression, whereas `!!!` says to expect a list of column names or expressions.
 
-`:=` is used in place of `=` in the special case where we need `dplyr` to
-resolve a column name on the left hand side of an `=` like in
-`mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand
-side in this example is not legal R syntax, so instead we must write:
-`mutate(!!treat_input_as_col(colname) := rownumber)`
+`:=` is used in place of `=` in the special case where we need `dplyr` to resolve a column name on the left hand side of an `=` like in `mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!treat_input_as_col(colname) := rownumber)`
   
-## Usage Examples
+## Usage examples
 
 ### Making `double_col` work
-Using what was typed, `dplyr` style:
+Using what was input, `dplyr` style:
 
 ```
 double_col <- function(dat, arg){
@@ -101,8 +92,7 @@ double_col <- function(dat, arg){
 double_col(mtcars, cyl)
 ```
 
-Using supplied value:
-
+Using the supplied value:
 ```
 double_col <- function(dat, arg){
   mutate(dat, result = !!treat_string_as_col(arg)*2)
@@ -112,8 +102,8 @@ double_col <- function(dat, arg){
 double_col(mtcars, arg = 'cyl')
 ```
 
-### Supplying column names to be assigned to (lhs variant)
-A more useful version of `double_col` allows the name of the result column to be set. Here's using what was input, `dplyr` style:
+### Supplying column names to assign results to (lhs variant)
+A more useful version of `double_col` would be to allow the name of the resulting column to be set via the function. Again, this can be done using the literal input, `dplyr` style:
 
 ```
 double_col <- function(dat, arg, result){
@@ -124,8 +114,8 @@ double_col <- function(dat, arg, result){
 ## working call form:
 double_col(mtcars, cyl, cylx2) 
 ```
-And using supplied values:
 
+Or using supplied values:
 ```
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
@@ -134,11 +124,10 @@ double_col <- function(dat, arg, result){
 
 ## working call form:
 double_col(mtcars, arg = 'cyl',  result = 'cylx2')
-
 ```
 
 ### Working with argument lists containing column names
-When wrapping `group_by` it's likely you'll want to pass a list of column names. Here's how that is done using what was input, `dplyr` style:
+When wrapping `group_by`, you will likely want to pass a list of column names. Here's how that is done using what was input, `dplyr` style:
 
 ```
 reverse_group_by <- function(dat, ...){
@@ -150,10 +139,9 @@ reverse_group_by <- function(dat, ...){
 
 ## working call form
 reverse_group_by(mtcars, gear, am)
-
 ```
 
-and using a list of values:
+Using a list of values:
 ```
 reverse_group_by <- function(dat, columns){
   groups <- treat_strings_as_cols(columns)
@@ -165,7 +153,7 @@ reverse_group_by <- function(dat, columns){
 reverse_group_by(mtcars, c('gear', 'am'))
 ```
 
-or using the values of `...`:
+Using the values of `...`:
 ```
 reverse_group_by <- function(dat, ...){
   ## note the list() around ... to collect the arguments into a list.
@@ -181,9 +169,7 @@ reverse_group_by(mtcars, 'gear', 'am')
 ### Passing expressions involving columns
 Using the `_expr` functions, you can pass expressions involving column names to `dplyr` functions like `filter`, `mutate` and `summarise`.
 
-An example case involving a single expression is a more general version
-of the `double_col` function from above, called `double_anything`, that can take
-expressions involving columns:
+An example of a function involving an expression is a more general version of the `double_col` function from above, called `double_anything`, that can take expressions involving columns:
 
 ``` 
 double_anything <- function(dat, arg){
@@ -214,8 +200,8 @@ filter_loudly(mtcars, cyl >= 6, am == 1)
 ## 4 19.7   6  145 175 3.62 2.770 15.50  0  1    5    6
 ## 5 15.0   8  301 335 3.54 3.570 14.60  0  1    5    8 
 ```
-You can implement this function using filtering expressions as input by the caller, `dplyr` style:
 
+You can implement this function using filtering expressions exactly as input, `dplyr` style:
 ```
 filter_loudly <- function(x, ...){
   in_rows <- nrow(x)
@@ -230,7 +216,6 @@ filter_loudly <- function(x, ...){
 ```
 
 Or using a list/vector of values, parsed as expressions:
-
 ```
 filter_loudly <- function(x, filter_expressions){
   ## if accepting list arguments, should check all are character
@@ -264,13 +249,6 @@ filter_loudly <- function(x, ...){
 ## working call form:
 ## filter_loudly(mtcars, 'cyl >= 6', 'am == 1')
 ```
- 
-## Expressions vs columns
-It may have occurred to you that there are cases where a column name is a valid
-expression and vice versa. This is true, and it means in some situations you
-could switch the `_col` and the `_expr` versions of functions and things would
-continue to work. E.g. `treat_input_as_expr` in place of `treat_input_as_col`. Using the
-`col` version where appropriate invokes checks that assert what was passed can be
-interpreted as a simple column name. This is useful in situations where
-expressions are not permitted, like in `select` or on the left hand side of the
-internal assignment in `mutate`: i.e. `mutate(lhs_col = some_expr)`.
+
+## A note on expressions vs columns
+It may have occurred to you that there are cases where a column name is a valid expression and vice versa. This is true, and it means that in some situations, you could switch the `_col` and the `_expr` versions of functions and things would continue to work (e.g. `treat_input_as_expr` in place of `treat_input_as_col`). However, using the `col` version where appropriate invokes checks that assert that what was passed can be interpreted as a simple column name. This is useful in situations where expressions are not permitted, like in `select` or on the left hand side of the internal assignment in `mutate`: e.g. `mutate(lhs_col = some_expr)`.
