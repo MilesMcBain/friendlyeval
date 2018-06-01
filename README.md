@@ -3,24 +3,43 @@
 [![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval) [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 
-A friendly interface to the **tidy eval** framework and the [`rlang`](http://rlang.r-lib.org/) package for casual [`dplyr`](https://dplyr.tidyverse.org/) users.
+A friendly interface to the **tidy eval** framework and the
+[`rlang`](http://rlang.r-lib.org/) package for casual
+[`dplyr`](https://dplyr.tidyverse.org/) users.
 
-This package provides an alternative, auto-complete friendly interface to `rlang` that is more closely aligned with the task domain of a user 'programming with dplyr'. It implements most of the cases in the ['programming with dplyr'](https://dplyr.tidyverse.org/articles/programming.html) vignette.
+This package provides an alternative, auto-complete friendly interface to
+`rlang` that is more closely aligned with the task domain of a user 'programming
+with dplyr'. It implements most of the cases in the ['programming with
+dplyr'](https://dplyr.tidyverse.org/articles/programming.html) vignette.
 
-The interface can also convert itself to standard `rlang` with the help of an [RStudio addin](https://rstudio.github.io/rstudioaddins/) that replaces `friendlyeval` functions with their `rlang` equivalents. This allows you to prototype in friendly, then subsequently automagically transform to `rlang`. Your friends won't know the difference.
+The interface can also convert itself to standard `rlang` with the help of an
+[RStudio addin](https://rstudio.github.io/rstudioaddins/) that replaces
+`friendlyeval` functions with their `rlang` equivalents. This allows you to
+prototype in friendly, then subsequently automagically transform to `rlang`.
+Your friends won't know the difference.
 
 # Overview
 
 Arguments passed to `dplyr` can be *treated* as:
 
-* a single column name (e.g. `mpg` in `select(mtcars, mpg)`)
+* a single literal column name (e.g. `mpg` in `select(mtcars, mpg)`)
 * a single expression (e.g. `cyl <= 6` in `filter(mtcars, cyl <= 6)`)
-* a list of column names (e.g. `mpg, cyl` in `select(mtcars, mpg, cyl)`)
+* a list of literal column names (e.g. `mpg, cyl` in `select(mtcars, mpg, cyl)`)
 * a list of expressions (e.g. `hp >= mean(hp), wt > 3` in `filter(mtcars, hp >= mean(hp), wt > 3)`)
 
-`dplyr` uses special argument handling to interpret and treat those arguments as one or more column names or expressions. User functions don't perform that same argument handling, so we need some way to tell `dplyr` how to *treat* these arguments. `rlang` provides the functions we need to do just that, but knowing which `rlang` function maps to each use case requires a fairly nuanced understanding of metaprogramming concepts. 
+`dplyr` uses special argument handling to interpret and treat those arguments as
+one or more column names or expressions. User functions don't perform that same
+argument handling, so we need some way to tell `dplyr` how to *treat* these
+arguments we pass from our enclosing functions. `rlang` provides the functions
+we need to do just that, but knowing which `rlang` function maps to each use
+case requires a fairly nuanced understanding of metaprogramming concepts.
 
-`friendlyeval` helps bridge that gap by providing a descriptive (and auto-complete friendly) set of eight complimentary functions that instruct `dplyr` to resolve these outputs using either the literal input provided as the arguments to your function (as shown above, via the `treat_input` functions) or the string values of those arguments (e.g. `arg = "column"` via the `treat_string` functions):
+`friendlyeval` helps bridge that gap by providing a descriptive (and
+auto-complete friendly) set of eight complimentary functions that instruct
+`dplyr` to resolve arguments we pass using either:
+
+* the literal input provided as the arguments to our function (e.g. the text `lat` and `lon` in `my_select(dat, lat, lon)`) 
+* the string values of those arguments (e.g. ``"lat"`` and ``"lon"` in `my_select(dat, arg1 = "lat", "lon")`):
 
 function | usage 
 --- | --- 
@@ -33,21 +52,30 @@ function | usage
 `treat_strings_as_cols` | Treat a list of character values as a list of `dplyr` column names.
 `treat_strings_as_exprs` | Treat a list of character values as a list of expressions involving `dplyr` column names.
     
-These eight functions are used in conjunction with three operators provided by `rlang`:
+These eight functions are used in conjunction with three tidy eval operators:
  
   * `!!`
   * `!!!`
   * `:=`
 
-`!!` and `!!!` are signposts that tell `dplyr`: *"Stop! This needs to be evaluated to resolve to one or more column names or expressions"*. 
+`!!` and `!!!` are signposts that tell `dplyr`: 
+
+> "Stop! This needs to be evaluated to resolve column names or expressions". 
 
 `!!` tells `dplyr` to expect a single column name or expression, whereas `!!!` says to expect a list of column names or expressions.
 
-`:=` is used in place of `=` in the special case where we need `dplyr` to resolve a column name on the left hand side of an `=` like in `mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand side in this example is not legal R syntax, so instead we must write: `mutate(!!treat_input_as_col(colname) := rownumber)`.
+`:=` is used in place of `=` in the special case where we need `dplyr` to
+resolve a column name on the left hand side of an `=` like in
+`mutate(!!treat_input_as_col(colname) = rownumber)`. Evaluating on the left hand
+side in this example is not legal R syntax, so instead we must write:
+`mutate(!!treat_input_as_col(colname) := rownumber)`.
   
 # Writing functions that call `dplyr`
 
-`dplyr` functions try to be user-friendly by saving you typing. This allows you to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of the more cumbersome base R style: `data$col = abs(data$col2); data$col3 = data$col4*100`.
+`dplyr` functions try to be user-friendly by saving you typing. This allows you
+to write code like `mutate(data, col1 = abs(col2), col3 = col4*100)` instead of
+the more cumbersome base R style: `data$col <- abs(data$col2); data$col3 <-
+data$col4*100`.
 
 The cost of this convenience is more work when we want to write functions that call `dplyr`, because `dplyr` needs to be instructed how to *treat* the arguments we pass to it. For example, this function does not work as we might expect:
 
