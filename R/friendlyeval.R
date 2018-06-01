@@ -1,35 +1,34 @@
-##' Take what was typed and use it as a column name argument in a dplyr
-##' function.
+##' Take what was input and use it as a column name argument in a dplyr function.
 ##'
 ##' This is used inside a function to pass the literal text of what the user
 ##' typed as an argument to another function. When using dplyr the text will
 ##' typically be destined for a column name argument. See examples for usage
 ##' scenarios.
 ##'
-##' @title typed_as_name
-##' @usage typed_as_name(arg)
-##' @param arg the argument for which the user typed text that is to be used
+##' @title treat_input_as_col
+##' @usage treat_input_as_col(arg)
+##' @param arg the argument for which the user input text that is to be used
 ##'   as a column name.
 ##' @return Something that will resolve to a column named when prefixed with !!.
 ##' @examples
 ##' \dontrun{
 ##' select_this <- function(a_col){
-##'  select(mtcars, !!typed_as_name(a_col))
+##'  select(mtcars, !!treat_input as_col(a_col))
 ##' }
 ##' select_this(cyl)
 ##'
 ##' mutate_this <- function(a_col){
-##'  mutate(mtcars, result = mean(!!typed_as_name(a_col)))
+##'  mutate(mtcars, result = mean(!!treat_input_as_col(a_col)))
 ##' }
 ##' mutate_this(cyl)
 ##'
 ##' filter_same <- function(dat, x, y) {
-##'  dplyr::filter(dat, !!typed_as_name(x) == !!typed_as_name(y))
+##'  dplyr::filter(dat, !!treat_input_as_col(x) == !!treat_input_as_col(y))
 ##' }
 ##' filter_same(mtcars, carb, gear)
 ##' }
 ##' @export
-eval_input_as_col <- rlang::ensym
+treat_input_as_col <- rlang::ensym
 
 
 ##' .. content for \description{} (no empty lines) ..
@@ -39,7 +38,7 @@ eval_input_as_col <- rlang::ensym
 ##' @param arg 
 ##' @return
 ##' @export
-eval_input_as_expr <- rlang::enquo
+treat_input_as_expr <- rlang::enquo
 
 
 ##' Take what was typed for a comma separated list of parameters and pass it to
@@ -64,7 +63,7 @@ eval_input_as_expr <- rlang::enquo
 ##' select_these(mtcars, cyl, wt)
 ##' }
 ##' @export
-eval_inputs_as_cols <- function(...){
+treat_inputs_as_cols <- function(...){
   eval.parent(rlang::ensyms(...))
 }
 
@@ -75,7 +74,7 @@ eval_inputs_as_cols <- function(...){
 ##' @param arg 
 ##' @return
 ##' @export
-eval_inputs_as_exprs <- function(...){
+treat_inputs_as_exprs <- function(...){
   eval.parent(rlang::enquos(...))
 }
 
@@ -97,7 +96,7 @@ eval_inputs_as_exprs <- function(...){
 ##'  select(-!!value_as_name(b))
 ##' }
 ##' @export
-eval_value_as_col <- function(arg){
+treat_string_as_col <- function(arg){
   rlang::sym(arg)
 }
 
@@ -135,7 +134,7 @@ eval_value_as_col <- function(arg){
 ##' select_not_these(mtcars, cols = c("cyl", "wt"))
 ##' }
 ##' @export
-eval_values_as_cols <- function(arg){
+treat_strings_as_cols <- function(arg){
   rlang::syms(arg)
 }
 
@@ -147,7 +146,7 @@ eval_values_as_cols <- function(arg){
 ##' @param arg 
 ##' @return
 ##' @export
-eval_value_as_expr <- rlang::parse_expr
+treat_string_as_expr <- rlang::parse_expr
 
 ##' .. content for \description{} (no empty lines) ..
 ##'
@@ -156,6 +155,6 @@ eval_value_as_expr <- rlang::parse_expr
 ##' @param arg 
 ##' @return
 ##' @export
-eval_values_as_exprs <- function(arg){
+treat_strings_as_exprs <- function(arg){
   rlang::parse_exprs(textConnection(unlist(arg)))
 }
