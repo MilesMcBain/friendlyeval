@@ -2,12 +2,12 @@
 % Please edit documentation in R/friendlyeval.R
 \name{treat_string_as_expr}
 \alias{treat_string_as_expr}
-\title{treat_string_as_expr(arg)}
+\title{treat_string_as_expr(x)}
 \usage{
-treat_string_as_expr(arg)
+treat_string_as_expr(x)
 }
 \arguments{
-\item{arg}{a string to be treated as an expression.}
+\item{x}{a string to be treated as an expression.}
 }
 \value{
 something that will resolve to an expression when prefixed with `!!`

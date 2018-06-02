@@ -10,6 +10,9 @@ treat_input_as_expr(arg)
 \item{arg}{the argument for which the literal input text is to be used as an
 expression.}
 }
+\value{
+something that will resolve to an expression when prefixed by `!!`
+}
 \description{
 Take what was input and treat it as an expression argument to dplyr function.
 }

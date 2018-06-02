@@ -42,7 +42,7 @@ treat_input_as_col <- rlang::ensym
 ##' @usage treat_input_as_expr(arg) 
 ##' @param arg the argument for which the literal input text is to be used as an
 ##'   expression.
-##' @return
+##' @return something that will resolve to an expression when prefixed by `!!`
 ##' @export
 treat_input_as_expr <- rlang::enquo
 
@@ -163,9 +163,9 @@ treat_strings_as_cols <- function(arg){
 ##' in the context of a dplyr function call. This may be convenient when
 ##' building expressions to evaluate at run-time.
 ##'
-##' @title treat_string_as_expr(arg)
-##' @usage treat_string_as_expr(arg)
-##' @param arg a string to be treated as an expression.
+##' @title treat_string_as_expr(x)
+##' @usage treat_string_as_expr(x)
+##' @param x a string to be treated as an expression.
 ##' @return something that will resolve to an expression when prefixed with `!!`
 ##' @examples
 ##' \dontrun{
