@@ -1,6 +1,8 @@
 # friendlyeval
 
-[![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval) [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Travis-CI Build Status](https://api.travis-ci.org/MilesMcBain/friendlyeval.svg?branch=master)](https://travis-ci.org/MilesMcBain/friendlyeval)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/milesmcbain/friendlyeval?branch=master&svg=true)](https://ci.appveyor.com/project/milesmcbain/friendlyeval)
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 
 A friendly interface to the **tidy eval** framework and the
