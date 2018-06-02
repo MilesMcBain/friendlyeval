@@ -2,11 +2,14 @@
 .friendlyeval$transforms <- 
   tibble::tribble(
     ~friendly, ~rlang,
-    "typed_as_name_lhs", "rlang::ensym",
-    "typed_as_name", "rlang::enquo",
-    "typed_list_as_name_list", "rlang::enquos",
-    "value_as_name", "rlang::sym",
-    "value_list_as_name_list", "rlang::syms"
+    "treat_input_as_col", "rlang::ensym",
+    "treat_inputs_as_cols", "rlang::ensyms",
+    "treat_input_as_expr", "rlang::enquo",
+    "treat_inputs_as_exprs", "rlang::enquos",
+    "treat_string_as_col", "rlang::sym",
+    "treat_strings_as_cols", "rlang::syms",
+    "treat_string_as_expr", "rlang::parse_expr",
+    "treat_strings_as_exprs", "(function(x){rlang::parse_exprs(textConnection(x))})"
   )
 
 #' Convert friendlyeval functions to rlang
@@ -46,7 +49,8 @@ replace_friendly <- function(text){
         .x = .friendlyeval$transforms$friendly,
         .y = .friendlyeval$transforms$rlang,
         .f = function(text, friendly, rlang){
-          gsub(pattern = friendly, replacement = rlang, x = text)
+          gsub(pattern = paste0("\\b",friendly,"\\b"),
+               replacement = rlang, x = text)
         },
         .init = text
       )
