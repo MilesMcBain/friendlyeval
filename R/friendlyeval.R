@@ -187,6 +187,11 @@ treat_string_as_expr <- rlang::parse_expr
 ##' This will parse a list or vector of strings and treat them as a list of
 ##' expressions to be evaluated in the context of a dplyr function. This may be
 ##' convenient when building expressions to evaluate at run time.
+##'
+##' Note that the current version of `rlang::parse_exprs` does not support
+##' list/vector arguments, resulting a convoluted looking transformation from
+##' `friendlyeval`. This is fixed in the dev version of `rlang` and will allow a
+##' more sane looking conversion in the future.
 ##' 
 ##' @title treat_strings_as_exprs(arg)
 ##' @param arg a list or vector of strings to be treated as expressions.
@@ -203,5 +208,7 @@ treat_string_as_expr <- rlang::parse_expr
 ##' }
 ##' @export
 treat_strings_as_exprs <- function(arg){
-  rlang::parse_exprs(textConnection(unlist(arg)))
+  (function(x){rlang::parse_exprs(textConnection(unlist(x)))})(arg)
 }
+
+treat_strings_as_exprs(c('mean(mpg)','var(mpg)'))
