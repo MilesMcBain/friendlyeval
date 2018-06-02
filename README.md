@@ -4,6 +4,10 @@
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/milesmcbain/friendlyeval?branch=master&svg=true)](https://ci.appveyor.com/project/milesmcbain/friendlyeval)
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
+![](https://cdn.rawgit.com/MilesMcBain/friendlyeval/39e7c55e/media/friendlyeval.gif)
+
+---
+
 A friendly interface to the **tidy eval** framework and the
 [`rlang`](http://rlang.r-lib.org/) package for casual
 [`dplyr`](https://dplyr.tidyverse.org/) users.
