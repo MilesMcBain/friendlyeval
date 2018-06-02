@@ -22,6 +22,11 @@ The interface can also convert itself to standard `rlang` with the help of an
 `friendlyeval` functions with their `rlang` equivalents. This allows you to
 prototype in friendly, then subsequently automagically transform to `rlang`.
 Your friends won't know the difference.
+# Installation
+
+```r
+devtools::install_github("milesmcbain/friendlyeval")
+```
 
 # Overview
 
