@@ -210,5 +210,3 @@ treat_string_as_expr <- rlang::parse_expr
 treat_strings_as_exprs <- function(arg){
   (function(x){rlang::parse_exprs(textConnection(unlist(x)))})(arg)
 }
-
-treat_strings_as_exprs(c('mean(mpg)','var(mpg)'))
