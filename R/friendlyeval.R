@@ -182,24 +182,25 @@ treat_strings_as_cols <- function(arg){
 ##' @export
 treat_string_as_expr <- rlang::parse_expr
 
-##' Treat the string values of a list or character as expressions in a dplyr function.
+##' Treat the string values of a character vector as expressions in a dplyr function.
 ##'
-##' This will parse a list or vector of strings and treat them as a list of
+##' This will parse a vector of strings and treat them as a list of
 ##' expressions to be evaluated in the context of a dplyr function. This may be
 ##' convenient when building expressions to evaluate at run time.
 ##'
 ##' Note that the current version of `rlang::parse_exprs` does not support
-##' list/vector arguments, resulting a convoluted looking transformation from
+##' vector arguments, resulting in a convoluted looking transformation from
 ##' `friendlyeval`. This is fixed in the dev version of `rlang` and will allow a
 ##' more sane looking conversion in the future.
 ##' 
 ##' @title treat_strings_as_exprs(arg)
-##' @param arg a list or vector of strings to be treated as expressions.
+##' @param arg a vector of strings to be treated as expressions.
 ##' @return something that will resolve to a list of expressions when prefixed with `!!!`
 ##' @examples
 ##' \dontrun{
 ##' summarise_uppr <- function(dat, ...){
-##'   dots <- list(...)
+##'   ## need to capture a character vector
+##'   dots <- as.character(list(...))
 ##'   functions <- tolower(unlist(dots))
 ##'   summarise(dat, !!!treat_strings_as_exprs(functions))
 ##' }
@@ -208,5 +209,6 @@ treat_string_as_expr <- rlang::parse_expr
 ##' }
 ##' @export
 treat_strings_as_exprs <- function(arg){
-  (function(x){rlang::parse_exprs(textConnection(unlist(x)))})(arg)
+  (function(x){rlang::parse_exprs(textConnection(x))})(arg)
 }
+

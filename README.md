@@ -50,7 +50,7 @@ function | usage
 `treat_string_as_col` | Treat the character value of your function argument as a `dplyr` column name.
 `treat_string_as_expr` | Treat the character value of your function argument as an expression involving a `dplyr` column name. 
 `treat_strings_as_cols` | Treat a list of character values as a list of `dplyr` column names.
-`treat_strings_as_exprs` | Treat a list of character values as a list of expressions involving `dplyr` column names.
+`treat_strings_as_exprs` | Treat a vector of strings as a list of expressions involving `dplyr` column names.
     
 These eight functions are used in conjunction with three tidy eval operators:
  

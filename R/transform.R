@@ -9,7 +9,7 @@
     "treat_string_as_col", "rlang::sym",
     "treat_strings_as_cols", "rlang::syms",
     "treat_string_as_expr", "rlang::parse_expr",
-    "treat_strings_as_exprs", "(function(x){rlang::parse_exprs(textConnection(unlist(x)))})"
+    "treat_strings_as_exprs", "(function(x){rlang::parse_exprs(textConnection(x))})"
   )
 
 #' Convert friendlyeval functions to rlang
