@@ -49,7 +49,7 @@ auto-complete friendly) set of eight complimentary functions that instruct
 `dplyr` to resolve arguments we pass using either:
 
 * the literal input provided as the arguments to our function (e.g. the text `lat` and `lon` in `my_select(dat, lat, lon)`) 
-* the string values of those arguments (e.g. ``"lat"`` and ``"lon"` in `my_select(dat, arg1 = "lat", "lon")`):
+* the string values of those arguments (e.g. `"lat"` and `"lon"` in `my_select(dat, arg1 = "lat", "lon")`):
 
 function | usage 
 --- | --- 
@@ -89,7 +89,7 @@ data$col4*100`.
 
 The cost of this convenience is more work when we want to write functions that call `dplyr`, because `dplyr` needs to be instructed how to *treat* the arguments we pass to it. For example, this function does not work as we might expect:
 
-```
+```r
 double_col <- function(dat, arg){
   mutate(dat, result = arg*2)
 }
@@ -100,7 +100,7 @@ double_col(mtcars, cyl)
 #   Evaluation error: object 'cyl' not found.
 ```
 This is because our `double_col` function doesn't perform the same special argument handling as `dplyr` functions. What if we pass our column name as a string value instead?
-```
+```r
 double_col(mtcars, arg = 'cyl')
 
 # Error in mutate_impl(.data, dots) : 
@@ -117,7 +117,7 @@ That doesn't work either, even though those were our only options under normal e
 ### Making `double_col` work
 Using what was input, `dplyr` style:
 
-```
+```r
 double_col <- function(dat, arg){
   mutate(dat, result = !!treat_input_as_col(arg) * 2)
 }
@@ -127,7 +127,7 @@ double_col(mtcars, cyl)
 ```
 
 Using the supplied value:
-```
+```r
 double_col <- function(dat, arg){
   mutate(dat, result = !!treat_string_as_col(arg) * 2)
 }
@@ -139,7 +139,7 @@ double_col(mtcars, arg = 'cyl')
 ### Supplying column names to assign results to (lhs variant)
 A more useful version of `double_col` would be to allow the name of the resulting column to be set via the function. Again, this can be done using the literal input, `dplyr` style:
 
-```
+```r
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
   mutate(dat, !!treat_input_as_col(result) := !!treat_input_as_col(arg) * 2)
@@ -150,7 +150,7 @@ double_col(mtcars, cyl, cylx2)
 ```
 
 Or using supplied values:
-```
+```r
 double_col <- function(dat, arg, result){
   ## note usage of ':=' for lhs eval. 
   mutate(dat, !!treat_string_as_col(result) := !!treat_string_as_col(arg) * 2)
@@ -163,7 +163,7 @@ double_col(mtcars, arg = 'cyl',  result = 'cylx2')
 ### Working with argument lists containing column names
 When wrapping `group_by`, you will likely want to pass a list of column names. Here's how to do that using what was input, `dplyr` style:
 
-```
+```r
 reverse_group_by <- function(dat, ...){
   ## this expression is split out for readability, but it can be nested into below.
   groups <- treat_inputs_as_cols(...)
@@ -176,7 +176,7 @@ reverse_group_by(mtcars, gear, am)
 ```
 
 Here's how to do it using a list of values:
-```
+```r
 reverse_group_by <- function(dat, columns){
   groups <- treat_strings_as_cols(columns)
 
@@ -188,7 +188,7 @@ reverse_group_by(mtcars, c('gear', 'am'))
 ```
 
 And here's how to do it using the values of `...`:
-```
+```r
 reverse_group_by <- function(dat, ...){
   ## note the list() around ... to collect the arguments into a list.
   groups <- treat_strings_as_cols(list(...)) 
@@ -203,7 +203,7 @@ reverse_group_by(mtcars, 'gear', 'am')
 ### Passing expressions involving columns
 Using the `_expr` functions, you can pass expressions involving column names to `dplyr` functions like `filter`, `mutate` and `summarise`. An example of a function involving an expression is a more general version of the `double_col` function from above, called `double_anything`, that can take expressions involving columns:
 
-``` 
+```r
 double_anything <- function(dat, arg){
   mutate(dat, result = !!treat_input_as_expr(arg))
 }
@@ -221,7 +221,7 @@ double_anything(mtcars, cyl * am)
 
 A common usage pattern is to take a list of expressions. Consider the `filter_loudly` function that reports the number of rows filtered:
 
-```
+```r
 filter_loudly(mtcars, cyl >= 6, am == 1) 
 
 ## Filtered out 27 rows.
@@ -234,7 +234,7 @@ filter_loudly(mtcars, cyl >= 6, am == 1)
 ```
 
 You can implement this function using filtering expressions exactly as input, `dplyr` style:
-```
+```r
 filter_loudly <- function(x, ...){
   in_rows <- nrow(x)
   out <- filter(x, !!!treat_inputs_as_exprs(...))
@@ -248,7 +248,7 @@ filter_loudly <- function(x, ...){
 ```
 
 Or using a list/vector of values, parsed as expressions:
-```
+```r
 filter_loudly <- function(x, filter_expressions){
   ## if accepting list arguments, should check all are character
   stopifnot(purrr::every(filter_expressions, is.character))
@@ -265,7 +265,7 @@ filter_loudly <- function(x, filter_expressions){
 ```
 
 Or capturing the values of `...`, parsed as expressions:
-```
+```r
 filter_loudly <- function(x, ...){
   dots <- list(...)
   ## if accepting list arguments, should check all are character
