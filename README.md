@@ -190,7 +190,7 @@ reverse_group_by(mtcars, c('gear', 'am'))
 And here's how to do it using the values of `...`:
 ```r
 reverse_group_by <- function(dat, ...){
-  ## note the list() around ... to collect the arguments into a list.
+  ## note the list() around ... to collect the values of the arguments into a list.
   groups <- treat_strings_as_cols(list(...)) 
 
   group_by(dat, !!!rev(groups))
@@ -201,20 +201,24 @@ reverse_group_by(mtcars, 'gear', 'am')
 ```
 
 ### Passing expressions involving columns
-Using the `_expr` functions, you can pass expressions involving column names to `dplyr` functions like `filter`, `mutate` and `summarise`. An example of a function involving an expression is a more general version of the `double_col` function from above, called `double_anything`, that can take expressions involving columns:
+Using the `_expr` functions, you can pass expressions involving column names to
+`dplyr` functions like `filter`, `mutate` and `summarise`. An example of a
+function involving an expression is a more general version of the `double_col`
+function from above, called `double_anything`, that can take expressions
+involving columns, and double those:
 
 ```r
 double_anything <- function(dat, arg){
-  mutate(dat, result = !!treat_input_as_expr(arg))
+  mutate(dat, result = (!!treat_input_as_expr(arg)) * 2)
 }
 
 ## working call form:
 double_anything(mtcars, cyl * am)
 
 ##     mpg cyl  disp  hp drat    wt  qsec vs am gear carb result
-## 1  21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4      6
-## 2  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4      6
-## 3  22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1      4
+## 1  21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4     12
+## 2  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4     12
+## 3  22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1      8
 ## 4  21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1      0
 ## 5  18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2      0
 ```
