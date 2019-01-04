@@ -209,6 +209,6 @@ treat_string_as_expr <- rlang::parse_expr
 ##' }
 ##' @export
 treat_strings_as_exprs <- function(arg){
-  (function(x){rlang::parse_exprs(textConnection(x))})(arg)
+  rlang::parse_exprs(arg)
 }
 
