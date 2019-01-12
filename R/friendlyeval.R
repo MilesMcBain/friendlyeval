@@ -188,10 +188,6 @@ treat_string_as_expr <- rlang::parse_expr
 ##' expressions to be evaluated in the context of a dplyr function. This may be
 ##' convenient when building expressions to evaluate at run time.
 ##'
-##' Note that the current version of `rlang::parse_exprs` does not support
-##' vector arguments, resulting in a convoluted looking transformation from
-##' `friendlyeval`. This is fixed in the dev version of `rlang` and will allow a
-##' more sane looking conversion in the future.
 ##' 
 ##' @title treat_strings_as_exprs(arg)
 ##' @param arg a vector of strings to be treated as expressions.
